@@ -6,7 +6,7 @@ import Login from "./components/Login";
 export default function Home() {
 
   return (
-    <div className="flex min-h-screen flex-col relative max-w-3xl">
+    <div className="flex min-h-screen flex-col relative">
       <div className="mb-2">
         <Header />
       </div>
