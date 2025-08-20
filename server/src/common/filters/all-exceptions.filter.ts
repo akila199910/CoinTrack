@@ -32,11 +32,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
         };
       } else {
         
-        const { message, errors, code } = payload as any;
+        const { message, errors } = payload as any;
         body = {
           status: false,
           message: Array.isArray(message) ? 'Bad Request' : message ?? 'Error',
-          code,
           errors: normalizeErrors(payload),
         };
       }

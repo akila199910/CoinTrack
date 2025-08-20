@@ -1,17 +1,45 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { ValidationError } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix('/api/v1');
-    app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,               
-    forbidNonWhitelisted: true,    
-    transform: true,               
-  }));
+    app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    exceptionFactory: (validationErrors: ValidationError[] = []) => {
+      
+      const errors: Record<string, string[]> = {};
+
+      const walk = (err: ValidationError, parent = '') => {
+        const key = parent ? `${parent}.${err.property}` : err.property;
+
+        // field-level constraints
+        if (err.constraints) {
+          errors[key] = Object.values(err.constraints);
+        }
+
+          // nested objects/arrays
+          if (err.children && err.children.length) {
+            err.children.forEach(child => walk(child, key));
+          }
+        };
+
+          validationErrors.forEach(e => walk(e));
+
+          return new BadRequestException({
+            message: 'Validation failed',
+            errors, 
+          });
+        },
+      }),
+    );
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(process.env.PORT ?? 4000);

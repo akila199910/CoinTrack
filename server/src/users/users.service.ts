@@ -28,8 +28,6 @@ export class UsersService {
             ) {
                 errors.contactNumber = ['Contact number is already taken'];
             }
-                              console.log(dto);  
-
 
             if (Object.keys(errors).length) {
                 throw new ConflictException({
