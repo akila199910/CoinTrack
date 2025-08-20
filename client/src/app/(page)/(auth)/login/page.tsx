@@ -1,19 +1,18 @@
-"use client";
+import Header from '@/app/components/Header';
+import Login from '@/app/components/Login';
+import React from 'react'
 
-import Header from "./components/Header";
-import Login from "./components/Login";
-import Register from "./components/Register";
-
-export default function Home() {
-
+const LoginPage = () => {
   return (
     <div className="flex min-h-screen flex-col relative">
       <div className="mb-2">
         <Header />
       </div>
       <div className="flex flex-row  absolute top-16 w-full">
-        <Register />
+        <Login />
       </div>
     </div>
   );
 }
+
+export default LoginPage
