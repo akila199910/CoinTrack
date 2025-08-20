@@ -15,11 +15,11 @@ export const registerSchema = z.object({
         .max(15, "Last name must be less than 15 characters")
         .regex(/^[a-zA-Z]+$/, "Only alphabets are allowed"),            
     
-    // name: z
-    //     .string({ required_error: "Name is required" })
-    //     .trim()
-    //     .min(1, "Name is required")
-    //     .max(32, "Name must be less than 32 characters"),     
+    name: z
+        .string({ required_error: "Name is required" })
+        .trim()
+        .min(1, "Name is required")
+        .max(32, "Name must be less than 32 characters"),     
     
     email: z
         .string({ required_error: "Email address is required" })
