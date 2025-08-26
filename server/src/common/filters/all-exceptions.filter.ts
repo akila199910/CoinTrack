@@ -1,68 +1,46 @@
 import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
+  ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus
 } from '@nestjs/common';
-import type { Response } from 'express';
+import { Request, Response } from 'express';
+import { extractHttpExceptionPayload } from '../utils/validation.util';
+
+// If you use TypeORM, map QueryFailedError here as well.
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const res = ctx.getResponse<Response>();
+    const ctx       = host.switchToHttp();
+    const response  = ctx.getResponse<Response>();
+    const request   = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let body: any = {
-      status: false,
-      message: 'Internal server error',
-      errors: { _generic: ['Internal server error'] },
-    };
+    let message = 'Internal server error';
+    let errors: Record<string, any> | undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
-      const payload = exception.getResponse(); 
-
-      if (typeof payload === 'string') {
-        body = {
-          status: false,
-          message: payload,
-          errors: { _generic: [payload] },
-        };
-      } else {
-        
-        const { message, errors } = payload as any;
-        body = {
-          status: false,
-          message: Array.isArray(message) ? 'Bad Request' : message ?? 'Error',
-          errors: normalizeErrors(payload),
-        };
-      }
+      const payload = extractHttpExceptionPayload(exception);
+      message = payload.message ?? message;
+      errors  = payload.errors;
     } else {
-      const msg = (exception as any)?.message ?? 'Internal server error';
-      body = {
-        status: false,
-        message: msg,
-        errors: { _generic: [msg] },
-      };
+      // Example: Prisma unique constraint -> 409 + field errors
+      // if (isPrismaP2002(exception)) {
+      //   status  = HttpStatus.CONFLICT;
+      //   message = 'Conflict';
+      //   errors  = prismaUniqueToFieldMap(exception);
+      // }
+      // Example: TypeORM duplicate key -> map to 409
+      // else if (isTypeOrmUniqueError(exception)) { ... }
+      // else keep 500
     }
 
-    return res.status(status).json(body);
+    response.status(status).json({
+      status: false,
+      statusCode: status,
+      message,
+      errors: errors ?? undefined,
+      path: request.url,
+      method: request.method,
+    });
   }
-}
-
-function normalizeErrors(payload: any) {
-  
-  if (payload?.errors && typeof payload.errors === 'object') {
-    return payload.errors;
-  }
-  
-  if (Array.isArray(payload?.message)) {
-    return { _generic: payload.message };
-  }
-  if (typeof payload?.message === 'string') {
-    return { _generic: [payload.message] };
-  }
-  return { _generic: ['Error'] };
 }

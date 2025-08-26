@@ -1,18 +1,15 @@
 "use client";
 
 import Header from "./components/Header";
-import Login from "./components/Login";
-import Register from "./components/Register";
 
 export default function Home() {
-
   return (
     <div className="flex min-h-screen flex-col relative">
       <div className="mb-2">
         <Header />
       </div>
-      <div className="flex flex-row  absolute top-16 w-full">
-        <Register />
+      <div className="flex flex-row absolute top-16 w-full">
+        <h1>Welcome to Coin Tracker</h1>
       </div>
     </div>
   );

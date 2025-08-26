@@ -1,24 +1,54 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginSubmitData } from "../validation/login";
+import { loginUser } from "../api/api";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
+  const [error, setError] = useState<string>("");
+  const router = useRouter();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginSubmitData>({
     resolver: zodResolver(loginSchema),
-    mode: "onSubmit", 
+    mode: "onSubmit",
     defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (data: LoginSubmitData) => {
-    // Replace with your API call
-    console.log(data);
+    try {
+      setError("");
+      const response = await loginUser(data);
+      if (response.status === 201 || response.status === 200) {
+        if (response.data.data && response.data.data.user) {
+          login(response.data.data.user, "cookie-token");
+          // Navigate to dashboard
+          router.push("/dashboard");
+        } else {
+          setError("Invalid response from server");
+        }
+      } else {
+
+        if (response.data && response.data.message) {
+          setError(response.data.message);
+        } else if (response.data && response.data.errors) {
+          const errorMessages = Object.values(response.data.errors).flat();
+          setError(errorMessages.join(", "));
+        } else {
+          setError("Login failed. Please try again.");
+        }
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection.");
+      console.error("Login error:", err);
+    }
   };
 
   return (
@@ -37,6 +67,13 @@ const Login = () => {
         className="grid gap-4 rounded-2xl border bg-purple-100 p-4 shadow-sm sm:p-6"
         noValidate
       >
+        {/* Error Message */}
+        {error && (
+          <div className="rounded-md bg-red-50 p-3">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
         {/* Email */}
         <div className="space-y-2">
           <label htmlFor="email" className="block text-sm font-medium">
@@ -69,7 +106,7 @@ const Login = () => {
             placeholder="**********"
             className="block w-full rounded-md px-2 py-1 shadow-sm outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:text-sm"
             {...register("password")}
-                      />
+          />
           {errors.password && (
             <p id="password-error" className="text-sm text-red-600">
               {errors.password.message}

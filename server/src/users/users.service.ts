@@ -70,4 +70,13 @@ export class UsersService {
         }
     }
 
+    async findByEmailWithPassword(email: string) {
+        return this.usersRepository
+            .createQueryBuilder('u')
+            .addSelect('u.password')
+            .where('u.email = :email', { email })
+            .leftJoinAndSelect('u.profile', 'profile')
+            .getOne();
+    }
+
 }
