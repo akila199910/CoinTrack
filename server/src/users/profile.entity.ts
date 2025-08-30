@@ -13,6 +13,9 @@ export class Profile {
   @Column({ length: 255, default: 'user.png' })
   avatarUrl: string;
 
+  @Column({ length: 255, default: 'cover.jpg' })
+  coverUrl: string;
+
   @OneToOne(() => User, user => user.profile, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })  
   user: User;

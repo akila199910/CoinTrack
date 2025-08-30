@@ -87,4 +87,47 @@ export class UsersService {
         return data;
     }
 
+    async updateProfile(id: number, updateData: any) {
+        const user = await this.usersRepository.findOne({ where: { id }, relations: ['profile'] });
+        if (!user) {
+            return null;
+        }
+
+        if (updateData.firstName) user.firstName = updateData.firstName;
+        if (updateData.lastName) user.lastName = updateData.lastName;
+        if (updateData.email) user.email = updateData.email;
+        if (updateData.contactNumber) user.contactNumber = updateData.contactNumber;
+        
+        if (updateData.password) {
+            user.password = await bcrypt.hash(updateData.password, 10);
+        }
+
+        const updatedUser = await this.usersRepository.save(user);
+        return updatedUser;
+    }
+
+    async updateAvatar(id: number, avatarUrl: string) {
+        const user = await this.usersRepository.findOne({ where: { id }, relations: ['profile'] });
+        if (!user || !user.profile) {
+            return null;
+        }
+
+        user.profile.avatarUrl = avatarUrl;
+        await this.profilesRepo.save(user.profile);
+        
+        return user;
+    }
+
+    async updateCover(id: number, coverUrl: string) {
+        const user = await this.usersRepository.findOne({ where: { id }, relations: ['profile'] });
+        if (!user || !user.profile) {
+            return null;
+        }
+
+        user.profile.coverUrl = coverUrl;
+        await this.profilesRepo.save(user.profile);
+        
+        return user;
+    }
+
 }

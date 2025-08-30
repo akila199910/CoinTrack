@@ -4,8 +4,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { formatValidationErrors } from './common/utils/validation.util';
 import cookieParser from "cookie-parser";
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
     app.use(cookieParser());
 
     app.setGlobalPrefix('/api/v1');
@@ -33,6 +35,12 @@ async function bootstrap() {
   });
 
   app.useGlobalFilters(new AllExceptionsFilter());
+  
+  // Serve static files from uploads directory
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
+  
   await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();

@@ -3,7 +3,6 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { extractHttpExceptionPayload } from '../utils/validation.util';
-import { ResponseUtil } from '../utils/response.util';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -34,7 +33,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     response.status(status).json(
-      ResponseUtil.error(message, errors ? { errors } : [])
+      {
+        status: false,
+        message,
+        errors
+      }
     );
   }
 }
