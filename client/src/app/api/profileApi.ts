@@ -14,8 +14,32 @@ export const getProfile = async () => {
 };
 
 export const updateProfile = async (data: any) => {
-  const response = await api.put("/profile", data);
-  return response.data;
+  const response = await api.put("/users/my-profile", data);
+  return response;
+};
+
+export const updateAvatar = async (file: File) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await api.put("/users/my-profile/avatar", formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response;
+};
+
+export const updateCover = async (file: File) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await api.put("/users/my-profile/cover", formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response;
 };
 
 // export const deleteProfile = async () => {
