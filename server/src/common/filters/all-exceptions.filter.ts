@@ -3,8 +3,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { extractHttpExceptionPayload } from '../utils/validation.util';
-
-// If you use TypeORM, map QueryFailedError here as well.
+import { ResponseUtil } from '../utils/response.util';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -34,13 +33,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // else keep 500
     }
 
-    response.status(status).json({
-      status: false,
-      statusCode: status,
-      message,
-      errors: errors ?? undefined,
-      path: request.url,
-      method: request.method,
-    });
+    response.status(status).json(
+      ResponseUtil.error(message, errors ? { errors } : [])
+    );
   }
 }

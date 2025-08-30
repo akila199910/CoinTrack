@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { formatValidationErrors } from './common/utils/validation.util';
 import cookieParser from "cookie-parser";
 async function bootstrap() {
@@ -32,7 +31,7 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
-  app.useGlobalInterceptors(new ResponseInterceptor());
+
   app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(process.env.PORT ?? 4000);
 }

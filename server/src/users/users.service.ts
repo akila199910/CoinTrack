@@ -79,4 +79,12 @@ export class UsersService {
             .getOne();
     }
 
+    async myProfile(id: number) {
+        const data = await this.usersRepository.findOne({ where: { id }, relations: ['profile'] });
+        if (!data) {
+            return null;
+        }
+        return data;
+    }
+
 }

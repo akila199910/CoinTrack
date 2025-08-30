@@ -5,26 +5,45 @@ import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import type { Request, Response } from 'express';
 
 
-
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
-    const data = await this.authService.login(dto.email, dto.password, res);
-    return  data ; 
+  async login(@Body() dto: LoginDto, @Res() res: Response) {
+    try {
+      const data = await this.authService.login(dto.email, dto.password, res);
+      return res.status(200).json({
+        status: true,
+        data,
+        message: 'Login successful'
+      });
+    } catch (error) {
+      return res.status(401).json({
+        status: false,
+        data: [],
+        message: 'Invalid credentials'
+      });
+    }
   }
 
   @Post('logout')
-  logout(@Res({ passthrough: true }) res: Response) {
-    return this.authService.logout(res);
+  logout(@Res() res: Response) {
+    this.authService.logout(res);
+    return res.status(200).json({
+      status: true,
+      data: [],
+      message: 'Logged out successfully'
+    });
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  me(@Req() req: any) {
-    console.log(req) 
-    return { id: req.user.sub, role: req.user.role };
+  me(@Req() req: any, @Res() res: Response) {
+    return res.status(200).json({
+      status: true,
+      data: { id: req.user.sub, role: req.user.role },
+      message: 'User data retrieved successfully'
+    });
   }
 }
