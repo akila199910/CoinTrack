@@ -1,15 +1,22 @@
-import Header from '@/app/components/Header';
 import Login from '@/app/components/Login';
+import Link from 'next/link';
 import React from 'react'
 
 const LoginPage = () => {
   return (
-    <div className="flex min-h-screen flex-col relative">
-      <div className="mb-2">
-        <Header />
+    <div className="auth-card">
+      <div className="text-center mb-8">
+        <h1 className="auth-title">Welcome Back</h1>
+        <p className="auth-subtitle">Sign in to your account</p>
       </div>
-      <div className="flex flex-row  absolute top-16 w-full">
-        <Login />
+      <Login />
+      <div className="text-center mt-6">
+        <p className="text-sm text-gray-600">
+          Don't have an account?{' '}
+          <Link href="/register" className="auth-link">
+            Sign up here
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 interface User {
     id: number;
     role: string;
+    name?: string;
+    email?: string;
 }
 
 interface AuthContextType {
@@ -38,54 +40,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const login = (userData: User, token: string) => {
         setUser(userData);
-        // Store user data in localStorage for client-side access
+        // Store user data in localStorage for persistence
         localStorage.setItem('user', JSON.stringify(userData));
-        // Note: Server sets HTTP-only cookie, so we don't need to set it here
+        // Note: Token is handled by cookies via the API
     };
 
     const logout = async () => {
         try {
-            console.log('Logging out...');
             await logoutUser();
-            console.log('Logout successful');
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            // Always clear local state regardless of server response
             setUser(null);
-            // Clear localStorage
             localStorage.removeItem('user');
-            console.log('Local state cleared');
-
-            // Force redirect to login page
             router.push('/login');
         }
     };
 
     const checkAuth = async () => {
         try {
-            console.log('Checking authentication...');
-            // Try to get current user from server
             const response = await getCurrentUser();
             if (response.status === 200 && response.data) {
-                console.log('User authenticated:', response.data);
                 setUser(response.data);
-                // Store user data in localStorage for client-side access
                 localStorage.setItem('user', JSON.stringify(response.data));
             } else {
-                console.log('User not authenticated, status:', response.status);
-                // User not authenticated
                 setUser(null);
+                localStorage.removeItem('user');
             }
         } catch (error) {
             console.error('Auth check error:', error);
             setUser(null);
+            localStorage.removeItem('user');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
+        // First try to get user from localStorage for immediate UI update
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             try {
