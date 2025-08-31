@@ -40,7 +40,7 @@ export class AuthService {
       });
     }
 
-    const payload = { sub: user.id, role: user.role };
+    const payload = { sub: user.id, role: user.role, name: user.name };
     const token = this.jwt.sign(payload);
 
     res.cookie(this.cookieName, token, {

@@ -26,6 +26,7 @@ const Login = () => {
     try {
       setError("");
       const response = await loginUser(data);
+      console.log(response)
       if (response.status === 201 || response.status === 200) {
         if (response.data.data && response.data.data.user) {
           login(response.data.data.user, "access_token");

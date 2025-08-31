@@ -7,8 +7,7 @@ import { useRouter } from 'next/navigation';
 interface User {
     id: number;
     role: string;
-    name?: string;
-    email?: string;
+    name: string
 }
 
 interface AuthContextType {
@@ -39,10 +38,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const router = useRouter();
 
     const login = (userData: User, token: string) => {
-        setUser(userData);
-        // Store user data in localStorage for persistence
+        setUser({ ...userData, name: userData.name });
         localStorage.setItem('user', JSON.stringify(userData));
-        // Note: Token is handled by cookies via the API
     };
 
     const logout = async () => {
@@ -60,9 +57,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const checkAuth = async () => {
         try {
             const response = await getCurrentUser();
-            if (response.status === 200 && response.data) {
-                setUser(response.data);
-                localStorage.setItem('user', JSON.stringify(response.data));
+            if (response.status === 200 && response.data && response.data.data) {
+                setUser({ ...response.data.data, name: response.data.data.name });
+                localStorage.setItem('user', JSON.stringify(response.data.data));
             } else {
                 setUser(null);
                 localStorage.removeItem('user');
@@ -82,7 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (storedUser) {
             try {
                 const userData = JSON.parse(storedUser);
-                setUser(userData);
+                setUser({ ...userData, name: userData.name });
             } catch (error) {
                 console.error('Error parsing stored user data:', error);
                 localStorage.removeItem('user');

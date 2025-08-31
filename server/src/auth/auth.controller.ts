@@ -40,9 +40,10 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   me(@Req() req: any, @Res() res: Response) {
+    const userData = { id: req.user.sub, role: req.user.role, name: req.user.name };
     return res.status(200).json({
       status: true,
-      data: { id: req.user.sub, role: req.user.role },
+      data: userData,
       message: 'User data retrieved successfully'
     });
   }
