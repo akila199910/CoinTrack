@@ -1,6 +1,7 @@
 // src/users/user.entity.ts (add inverse side)
-import { OneToOne, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, Index } from 'typeorm';
+import { OneToOne, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, Index, OneToMany } from 'typeorm';
 import { Profile } from './profile.entity';
+import { Category } from 'src/category/entities/category.entity';
 
 export enum Role { ADMIN = 'ADMIN', CLIENT = 'CLIENT' }
 
@@ -36,6 +37,9 @@ export class User {
 
   @OneToOne(() => Profile, profile => profile.user, { cascade: ['insert'] })
   profile?: Profile;
+
+  @OneToMany(() => Category, (category) => category.user)
+    categories: Category[]
 
   @CreateDateColumn() createdAt: Date;
   @UpdateDateColumn() updatedAt: Date;
