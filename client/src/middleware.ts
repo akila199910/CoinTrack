@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   
   const token = request.cookies.get('access_token')?.value
   
-  const protectedRoutes = ['/dashboard', '/profile']
+  const protectedRoutes = ['/dashboard', '/profile','/categories']
   
   const authRoutes = ['/login', '/register']
   
