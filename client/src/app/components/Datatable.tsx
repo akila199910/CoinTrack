@@ -96,8 +96,8 @@ export default function DataTable<T>({
   });
 
   return (
-    <div className="w-full">
-      <div className="mb-6 space-y-4">
+    <div className="w-full relative">
+      <div className="mb-6 space-y-4 sticky top-20 p-2 z-10 bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center space-x-4">
             <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
@@ -140,9 +140,9 @@ export default function DataTable<T>({
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto ">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50 border-b border-gray-200 z-10 relative top-0 left-0 w-full  ">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (

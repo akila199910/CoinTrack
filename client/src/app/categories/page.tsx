@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, useEffect } from 'react'
-import DataTable from '../components/DataTable'
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-import { getCategoriesApi } from '../api/categoryApi';
+import { getCategoriesApi, createCategoryApi } from '../api/categoryApi';
+import CreateCategoryModal from '../components/CreateCategoryModal';
+import { CategorySubmitData } from '../validation/category';
+import DataTable from '../components/DataTable';
 
 // Helper function to validate URLs
 const isValidUrl = (string: string): boolean => {
@@ -125,13 +127,13 @@ const Page = () => {
     const [categoriesData, setCategoriesData] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const getCategories = async () => {
         setLoading(true);
         setError(null);
         try {
             const response = await getCategoriesApi();
-            console.log(response);
             setCategoriesData(response.data.data);
             setLoading(false);
             setError(null);
@@ -143,19 +145,32 @@ const Page = () => {
 
     useEffect(() => {
         getCategories();
-
     }, []);
 
     const handleAddCategory = () => {
-        console.log('Add category clicked');
+        setIsModalOpen(true);
+    };
+
+    const handleCreateCategory = async (categoryData: Partial<Category>) => {
+        setLoading(true);
+        try {
+            await createCategoryApi(categoryData as CategorySubmitData);
+            // Refresh the categories list after successful creation
+            await getCategories();
+            // Close modal only on success
+            setIsModalOpen(false);
+        } catch (err) {
+            throw err;
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEditCategory = (category: Category) => {
-        console.log('Edit category:', category);
+
     };
 
     const handleDeleteCategory = (category: Category) => {
-        console.log('Delete category:', category);
     };
 
     if (loading) {
@@ -194,7 +209,7 @@ const Page = () => {
     }
 
     return (
-        <div className="p-6">
+        <div className="p-2">
             <DataTable<Category>
                 data={categoriesData}
                 columns={categoriesColumns}
@@ -206,6 +221,12 @@ const Page = () => {
                 onDelete={handleDeleteCategory}
                 emptyStateTitle="No categories found"
                 emptyStateDescription="Try adjusting your search criteria"
+            />
+
+            <CreateCategoryModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCreateCategory}
             />
         </div>
     )

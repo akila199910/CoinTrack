@@ -18,7 +18,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     return (
         <aside
             ref={sidebar}
-            className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear
+            className={`absolute left-0 top-0 z-9999 flex h-screen w-48 flex-col overflow-y-hidden bg-white duration-300 ease-linear
              lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
 
@@ -32,13 +32,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
             <div className=" flex flex-col overflow-y-auto duration-300 ease-linear">
                 {/* <!-- Sidebar Menu --> */}
-                <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6 text-white">
+                <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6 text-black">
                     <ul className="flex flex-col gap-4 ml-4">
                         <li>
 
                             <Link href="/dashboard">
                                 <div className="flex items-center gap-2 ">
-                                    <Image src={dashboard} alt="Dashboard" />
+                                    <Image src={dashboard} alt="Dashboard" className="bg-black rounded-sm " />
                                     <span>Dashboard</span>
                                 </div>
                             </Link>
@@ -46,7 +46,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <li>
                             <Link href="/profile">
                                 <div className="flex items-center gap-2 ">
-                                    <Image src={profileW} alt="Profile" />
+                                    <Image src={profileW} alt="Profile" className="bg-black rounded-sm " />
                                     <span>Profile</span>
                                 </div>
                             </Link>
@@ -54,7 +54,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <li>
                             <Link href="/settings">
                                 <div className="flex items-center gap-2 ">
-                                    <Image src={settings} alt="Settings" />
+                                    <Image src={settings} alt="Settings" className="bg-black rounded-sm "  />
                                     <span>Settings</span>
                                 </div>
                             </Link>
@@ -62,7 +62,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <li>
                             <Link href="/categories">
                                 <div className="flex items-center gap-2 ">
-                                    <Image src={categories} alt="Categories" />
+                                    <Image src={categories} alt="Categories" className="bg-black rounded-sm " />
                                     <span>Categories</span>
                                 </div>
                             </Link>
@@ -70,7 +70,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <li>
                             <Link href="/logout">
                                 <div className="flex items-center gap-2 ">
-                                    <Image src={logout} alt="Logout" />
+                                    <Image src={logout} alt="Logout" className="bg-black rounded-sm " />
                                     <span>Logout</span>
                                 </div>
                             </Link>
