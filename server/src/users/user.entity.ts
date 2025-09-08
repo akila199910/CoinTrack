@@ -2,6 +2,7 @@
 import { OneToOne, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, Index, OneToMany } from 'typeorm';
 import { Profile } from './profile.entity';
 import { Category } from 'src/category/entities/category.entity';
+import { Transaction } from 'src/transaction/entities/transaction.entity';
 
 export enum Role { ADMIN = 'ADMIN', CLIENT = 'CLIENT' }
 
@@ -40,6 +41,9 @@ export class User {
 
   @OneToMany(() => Category, (category) => category.user)
     categories: Category[]
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  transactions: Transaction[]
 
   @CreateDateColumn() createdAt: Date;
   @UpdateDateColumn() updatedAt: Date;

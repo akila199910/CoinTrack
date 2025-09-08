@@ -13,7 +13,7 @@ export class CategoryService {
     try {
         const category = this.categoryRepository.create({
           ...createCategoryDto,
-          user: { id: userId } // Associate the category with the user
+          user: { id: userId }
         });
         await this.categoryRepository.save(category);
         return category;
