@@ -7,7 +7,6 @@ export const categorySchema = z.object({
     image: z.string().optional(),
     status: z.boolean().optional(),
     type: z.enum(["INCOME", "EXPENSE"]),
-
 })
 
 export type CategorySubmitData = z.infer<typeof categorySchema>;

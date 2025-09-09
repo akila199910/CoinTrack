@@ -58,19 +58,12 @@ export class TransactionService {
       
     }
   }
-
   async findAll(userId: number) {
-    const transactions = await this.transactionRepository.find({ 
+    return this.transactionRepository.find({
       where: { user: { id: userId } },
+      relations: ['category'],
       select: ['id', 'amount', 'date', 'description', 'status', 'category'],
-      relations: ['category']
-
     });
-    return {
-      status: true,
-      data: transactions,
-      message: 'Transactions fetched successfully'
-    };
   }
 
   async findOne(id: number) {

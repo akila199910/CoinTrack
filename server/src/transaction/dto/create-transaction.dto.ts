@@ -2,7 +2,7 @@ import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Le
 
 export class CreateTransactionDto {
 
-    @IsNotEmpty() @IsString() @Length(1, 15) 
+    @IsNotEmpty() @IsNumber()
     amount: string;
 
     @IsOptional() @IsString() @Length(1, 255) 

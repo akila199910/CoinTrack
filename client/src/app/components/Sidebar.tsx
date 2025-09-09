@@ -7,6 +7,7 @@ import profileW from '../icons/profilew.svg'
 import settings from '../icons/settingsW.svg'
 import logout from '../icons/logoutW.svg'
 import categories from '../icons/category.svg'
+import transactions from '../icons/transactionsW-outline.svg'
 
 interface SidebarProps {
     sidebarOpen: boolean;
@@ -64,6 +65,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 <div className="flex items-center gap-2 ">
                                     <Image src={categories} alt="Categories" className="bg-black rounded-sm " />
                                     <span>Categories</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/transactions">
+                                <div className="flex items-center gap-2 ">
+                                    <Image src={transactions} alt="Transactions" className="bg-black rounded-sm " />
+                                    <span>Transactions</span>
                                 </div>
                             </Link>
                         </li>

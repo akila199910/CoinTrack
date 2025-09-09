@@ -120,7 +120,6 @@ const categoriesColumns: ColumnDef<Category>[] = [
         },
         size: 120,
     },
-
 ];
 
 const Page = () => {
@@ -151,13 +150,12 @@ const Page = () => {
         setIsModalOpen(true);
     };
 
-    const handleCreateCategory = async (categoryData: Partial<Category>) => {
+    const handleCreateCategory = async (categoryData: CategorySubmitData) => {
         setLoading(true);
         try {
-            await createCategoryApi(categoryData as CategorySubmitData);
-            // Refresh the categories list after successful creation
+            await createCategoryApi(categoryData);
+
             await getCategories();
-            // Close modal only on success
             setIsModalOpen(false);
         } catch (err) {
             throw err;

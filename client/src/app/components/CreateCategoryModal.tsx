@@ -11,7 +11,6 @@ type Category = {
     image: string;
     status: boolean;
     type: "INCOME" | "EXPENSE";
-
 };
 interface CreateCategoryModalProps {
     isOpen: boolean;
@@ -33,8 +32,6 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
         setError(null);
         try {
             await onSubmitProp(data);
-            // Reset form after successful submission
-            // The parent component handles closing the modal and refreshing data
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
