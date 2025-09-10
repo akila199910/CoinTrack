@@ -134,11 +134,15 @@ const Page = () => {
         try {
             const response = await getCategoriesApi();
             setCategoriesData(response.data.data);
-            setLoading(false);
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
             setError(null);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
-            setLoading(false);
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
         }
     };
 
@@ -154,13 +158,14 @@ const Page = () => {
         setLoading(true);
         try {
             await createCategoryApi(categoryData);
-
             await getCategories();
             setIsModalOpen(false);
         } catch (err) {
             throw err;
         } finally {
-            setLoading(false);
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
         }
     };
 

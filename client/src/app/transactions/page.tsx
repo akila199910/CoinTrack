@@ -109,13 +109,19 @@ const page = () => {
     try {
       const response = await getTransactionsApi();
       setTransactions(response.data.data);
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }
   };
 
@@ -140,9 +146,14 @@ const page = () => {
         await getTransactions();
         setIsModalOpen(false);
     } catch (err) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
         throw err;
     } finally {
-        setLoading(false);
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
     }
 };
 

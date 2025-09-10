@@ -5,9 +5,10 @@ import coin from '../../../public/coin.svg'
 import dashboard from '../icons/dashboard.svg'
 import profileW from '../icons/profilew.svg'
 import settings from '../icons/settingsW.svg'
-import logout from '../icons/logoutW.svg'
+import logoutB from '../icons/logoutW.svg'
 import categories from '../icons/category.svg'
 import transactions from '../icons/transactionsW-outline.svg'
+import { useAuth } from "../context/AuthContext";
 
 interface SidebarProps {
     sidebarOpen: boolean;
@@ -16,6 +17,7 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
+    const { logout } = useAuth();
     return (
         <aside
             ref={sidebar}
@@ -77,12 +79,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </Link>
                         </li>
                         <li>
-                            <Link href="/logout">
-                                <div className="flex items-center gap-2 ">
-                                    <Image src={logout} alt="Logout" className="bg-black rounded-sm " />
+                            <button onClick={() => logout()}>
+                                <div className="flex items-center gap-2 cursor-pointer">
+                                    <Image src={logoutB} alt="Logout" className="bg-black rounded-sm " />
                                     <span>Logout</span>
                                 </div>
-                            </Link>
+                            </button>
                         </li>
                     </ul>
                 </nav>

@@ -35,9 +35,9 @@ const ProfilePage = () => {
     const password = watch("password");
 
     const getProfileData = async () => {
+        setLoading(true);
+        setError(null);
         try {
-            setLoading(true);
-            setError(null);
             const response = await getProfile();
             const data = response.data.data;
             setProfileData(data);
@@ -46,10 +46,12 @@ const ProfilePage = () => {
             setValue("lastName", data.lastName || "");
             setValue("email", data.email || "");
             setValue("contactNumber", data.contactNumber || "");
-
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
+            setError(null);
         } catch (err) {
             setError("Failed to load profile data");
-        } finally {
             setTimeout(() => {
                 setLoading(false);
             }, 2000);
@@ -85,7 +87,9 @@ const ProfilePage = () => {
             setUpdateError("Network error. Please check your connection.");
             console.error("Profile update error:", err);
         } finally {
-            setUpdateLoading(false);
+            setTimeout(() => {
+                setUpdateLoading(false);
+            }, 2000);
         }
     };
 
@@ -112,6 +116,10 @@ const ProfilePage = () => {
         } catch (err) {
             setUpdateError(`Failed to update ${type}. Please check your connection.`);
             console.error(`${type} update error:`, err);
+        } finally {
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
         }
     };
 
@@ -140,8 +148,22 @@ const ProfilePage = () => {
 
     if (error) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="text-red-600 text-lg">{error}</div>
+            <div className="p-6">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <h3 className="text-sm font-medium text-red-800">Error loading profile</h3>
+                            <div className="mt-2 text-sm text-red-700">
+                                <p>{error}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -150,10 +172,14 @@ const ProfilePage = () => {
 
         <>
             {loading ? (
-                <div className="flex justify-center items-center min-h-screen w-screen">
-                    <Image src={loaderImage} alt="loader" width={100} height={100} />
+                <div className="p-6">
+                    <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                            <p className="text-gray-600">Loading profile...</p>
+                        </div>
+                    </div>
                 </div>
-
             ) :
                 <div>
 
