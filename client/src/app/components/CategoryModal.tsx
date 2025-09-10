@@ -18,7 +18,7 @@ interface CreateCategoryModalProps {
     onSubmit: (categoryData: CategorySubmitData) => Promise<void>;
 }
 
-const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp }) => {
+const CategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp }) => {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<CategorySubmitData>({
         resolver: zodResolver(categorySchema),
         mode: "onSubmit",
@@ -42,7 +42,7 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-9999">
+        <div className="fixed inset-0 bg-blue-200 bg-opacity-50 flex items-center justify-center z-9999">
             <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl/30">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold text-gray-900">Create New Category</h2>
@@ -153,4 +153,4 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClo
     );
 };
 
-export default CreateCategoryModal;
+export default CategoryModal;

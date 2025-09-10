@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 
 @Module({
@@ -29,6 +30,7 @@ import { TransactionModule } from './transaction/transaction.module';
     AuthModule,
     CategoryModule,
     TransactionModule,
+    DashboardModule,
   ],
   controllers: [],
   providers: [AppService],

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { getCategoriesApi, createCategoryApi } from '../api/categoryApi';
-import CreateCategoryModal from '../components/CreateCategoryModal';
+import CategoryModal from '../components/CategoryModal';
 import { CategorySubmitData } from '../validation/category';
 import DataTable from '../components/DataTable';
 
@@ -221,7 +221,7 @@ const Page = () => {
                 emptyStateDescription="Try adjusting your search criteria"
             />
 
-            <CreateCategoryModal
+            <CategoryModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleCreateCategory}

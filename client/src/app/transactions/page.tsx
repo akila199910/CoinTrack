@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { createTransactionApi, getTransactionsApi } from "../api/transactionApi";
-import CreateTransactionModal from "../components/CreateTransactionModal";
+import TransactionModal from "../components/TransactionModal";
 import { TransactionSubmitData } from "../validation/transaction";
 
 type Category = {
@@ -196,7 +196,7 @@ const page = () => {
         emptyStateDescription="Try adjusting your search criteria"
       />
 
-      <CreateTransactionModal
+      <TransactionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTransaction}

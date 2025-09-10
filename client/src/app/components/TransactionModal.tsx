@@ -12,7 +12,7 @@ interface CreateTransactionModalProps {
     onSubmit: (transactionData: TransactionSubmitData) => Promise<void>;
 }
 
-const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp }) => {
+const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp }) => {
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(transactionSchema),
@@ -48,7 +48,7 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-9999">
+        <div className="fixed inset-0 bg-blue-200 bg-opacity-50 flex items-center justify-center z-9999">
             <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl/30">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold text-gray-900">Create New Transaction</h2>
@@ -178,4 +178,4 @@ const CreateTransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen,
     );
 }
 
-export default CreateTransactionModal;
+export default TransactionModal;
