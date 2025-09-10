@@ -36,40 +36,40 @@ export class DashboardService {
 
         // Group income by category and sum amounts
         const incomeByCategory = incomeTransactions.reduce((acc, transaction) => {
-            const categoryId = transaction.category.id;
-            const categoryName = transaction.category.name;
+            const incomeId = transaction.category.id;
+            const incomeName = transaction.category.name;
             
-            if (!acc[categoryId]) {
-                acc[categoryId] = {
-                    category_id: categoryId,
-                    category_name: categoryName,
+            if (!acc[incomeId]) {
+                acc[incomeId] = {
+                    income_id: incomeId,
+                    income_name: incomeName,
                     total_amount: 0,
                     transaction_count: 0
                 };
             }
             
-            acc[categoryId].total_amount += parseFloat(transaction.amount);
-            acc[categoryId].transaction_count += 1;
+            acc[incomeId].total_amount += parseFloat(transaction.amount);
+            acc[incomeId].transaction_count += 1;
             
             return acc;
         }, {} as Record<number, any>);
 
         // Group expense by category and sum amounts
         const expenseByCategory = expenseTransactions.reduce((acc, transaction) => {
-            const categoryId = transaction.category.id;
-            const categoryName = transaction.category.name;
+            const expenseId = transaction.category.id;
+            const expenseName = transaction.category.name;
             
-            if (!acc[categoryId]) {
-                acc[categoryId] = {
-                    category_id: categoryId,
-                    category_name: categoryName,
+            if (!acc[expenseId]) {
+                acc[expenseId] = {
+                    expense_id: expenseId,
+                    expense_name: expenseName,
                     total_amount: 0,
                     transaction_count: 0
                 };
             }
             
-            acc[categoryId].total_amount += parseFloat(transaction.amount);
-            acc[categoryId].transaction_count += 1;
+            acc[expenseId].total_amount += parseFloat(transaction.amount);
+            acc[expenseId].transaction_count += 1;
             
             return acc;
         }, {} as Record<number, any>);

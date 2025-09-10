@@ -1,6 +1,7 @@
 "use client";
 
 import { getDashboardDataApi } from "../api/dashboardApi";
+import DoughnutChart from "../components/DoughnutChart";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 
@@ -24,33 +25,33 @@ export default function Dashboard() {
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // const getDashboardData = async () => {
-    //     setIsLoading(true);
-    //     try {
-    //         const response = await getDashboardDataApi(selectedPeriod);
-            
-    //         setDashboardData(response.data);
-    //     } catch (error) {
-    //         console.error('Error fetching dashboard data:', error);
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // }
+    const getDashboardData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await getDashboardDataApi(selectedPeriod);
 
-    // useEffect(() => {
-    //     getDashboardData();
-    // }, [selectedPeriod]);
+            setDashboardData(response.data.data);
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        getDashboardData();
+    }, [selectedPeriod]);
 
     const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year') => {
         setSelectedPeriod(period);
     };
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
-    };
+    // const formatCurrency = (amount: number) => {
+    //     return new Intl.NumberFormat('en-US', {
+    //         style: 'currency',
+    //         currency: 'USD',
+    //     }).format(amount);
+    // };
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString();
@@ -102,7 +103,7 @@ export default function Dashboard() {
                                 Total Balance
                             </h3>
                             <p className={`text-3xl font-bold ${dashboardData.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {formatCurrency(dashboardData.balance)}
+                                {dashboardData.balance}
                             </p>
                             <p className="text-sm text-gray-500 mt-1">
                                 {dashboardData.balance >= 0 ? 'Positive balance' : 'Negative balance'}
@@ -114,11 +115,11 @@ export default function Dashboard() {
                                 Total Income
                             </h3>
                             <p className="text-3xl font-bold text-green-600">
-                                {formatCurrency(dashboardData.totalIncome)}
+                                {dashboardData.totalIncome}
                             </p>
-                            <p className="text-sm text-gray-500 mt-1">
+                            {/* <p className="text-sm text-gray-500 mt-1">
                                 {dashboardData.income.length} transactions
-                            </p>
+                            </p> */}
                         </div>
 
                         <div className="bg-white p-6 rounded-lg shadow-md border">
@@ -126,11 +127,22 @@ export default function Dashboard() {
                                 Total Expenses
                             </h3>
                             <p className="text-3xl font-bold text-red-600">
-                                {formatCurrency(dashboardData.totalExpense)}
+                                {dashboardData.totalExpense}
                             </p>
-                            <p className="text-sm text-gray-500 mt-1">
+                            {/* <p className="text-sm text-gray-500 mt-1">
                                 {dashboardData.expense.length} transactions
-                            </p>
+                            </p> */}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="rounded-xl border py-4">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4 uppercase text-center">Your Income Chart</h3>
+                            <DoughnutChart labels={dashboardData.income.map(i => i.income_name)} values={dashboardData.income.map(i => i.total_amount)} />
+                        </div>
+                        <div className="rounded-xl border py-4">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4 uppercase text-center">Your Expense Chart</h3>
+                            <DoughnutChart labels={dashboardData.expense.map(e => e.expense_name)} values={dashboardData.expense.map(e => e.total_amount)} />
                         </div>
                     </div>
 
@@ -140,7 +152,7 @@ export default function Dashboard() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                                 Income Transactions
                             </h3>
-                            {dashboardData.income.length > 0 ? (
+                            {/* {dashboardData.income.length > 0 ? (
                                 <div className="space-y-3">
                                     {dashboardData.income.slice(0, 5).map((transaction) => (
                                         <div key={transaction.id} className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
@@ -164,7 +176,7 @@ export default function Dashboard() {
                                 <div className="text-center py-8 text-gray-500">
                                     <p>No income transactions</p>
                                 </div>
-                            )}
+                            )} */}
                         </div>
 
                         {/* Expense Transactions */}
@@ -172,7 +184,7 @@ export default function Dashboard() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                                 Expense Transactions
                             </h3>
-                            {dashboardData.expense.length > 0 ? (
+                            {/* {dashboardData.expense.length > 0 ? (
                                 <div className="space-y-3">
                                     {dashboardData.expense.slice(0, 5).map((transaction) => (
                                         <div key={transaction.id} className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
@@ -196,7 +208,7 @@ export default function Dashboard() {
                                 <div className="text-center py-8 text-gray-500">
                                     <p>No expense transactions</p>
                                 </div>
-                            )}
+                            )} */}
                         </div>
                     </div>
 
