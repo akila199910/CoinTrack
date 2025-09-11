@@ -21,20 +21,27 @@ interface DashboardData {
 
 export default function Dashboard() {
     const { user } = useAuth();
-    const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year'>('today');
+    const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(false);
+    const [customStartDate, setCustomStartDate] = useState('');
+    const [customEndDate, setCustomEndDate] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const getDashboardData = async (period?: string, startDate?: string, endDate?: string) => {
 
-    const getDashboardData = async () => {
+        const response = await getDashboardDataApi(period, startDate, endDate);
         setLoading(true);
         try {
-            const response = await getDashboardDataApi(selectedPeriod);
             setDashboardData(response.data.data);
             setTimeout(() => {
                 setLoading(false);
             }, 2000);
-        } catch (error) {
-            console.error('Error fetching dashboard data:', error);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred');
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
+
         } finally {
             setTimeout(() => {
                 setLoading(false);
@@ -43,19 +50,27 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        getDashboardData();
-    }, [selectedPeriod]);
+        if (selectedPeriod === 'custom' && customStartDate && customEndDate) {
+            getDashboardData('custom', customStartDate, customEndDate);
+        } else if (selectedPeriod !== 'custom') {
+            getDashboardData(selectedPeriod);
+        }
+    }, [selectedPeriod, customStartDate, customEndDate]);
 
-    const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year') => {
+    const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year' | 'custom') => {
         setSelectedPeriod(period);
     };
 
-    // const formatCurrency = (amount: number) => {
-    //     return new Intl.NumberFormat('en-US', {
-    //         style: 'currency',
-    //         currency: 'USD',
-    //     }).format(amount);
-    // };
+    const handleCustomDateSubmit = () => {
+        if (customStartDate && customEndDate) {
+            getDashboardData('custom', customStartDate, customEndDate);
+        } else {
+            setError('Please select a date range');
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
+        }
+    };
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString();
@@ -84,6 +99,7 @@ export default function Dashboard() {
                 Welcome to Coin Tracker Dashboard
             </h1>
 
+            {/* Predefined Period Buttons */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
                 {[
                     { key: 'today', label: 'TODAY' },
@@ -102,6 +118,49 @@ export default function Dashboard() {
                         <span>{label}</span>
                     </div>
                 ))}
+            </div>
+
+            {/* Custom Date Range Section */}
+            <div className="bg-white p-6 rounded-lg shadow-md border mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Custom Date Range</h3>
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                        <input
+                            type="date"
+                            value={customStartDate}
+                            onChange={(e) => setCustomStartDate(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                        <input
+                            type="date"
+                            value={customEndDate}
+                            onChange={(e) => setCustomEndDate(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => handlePeriodChange('custom')}
+                            className={`px-4 py-2 rounded-md font-medium transition-colors ${selectedPeriod === 'custom'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                }`}
+                        >
+                            Apply Custom Range
+                        </button>
+                        <button
+                            onClick={handleCustomDateSubmit}
+                            disabled={!customStartDate || !customEndDate}
+                            className="px-4 py-2 bg-green-500 text-white rounded-md font-medium hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Submit
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {dashboardData && (
