@@ -45,10 +45,10 @@ export class TransactionController {
   async findAll(@Req() req: any, @Res() res: Response) {
     try {
       const userId = req.user.sub;
-      const transactions = await this.transactionService.findAll(+userId);
+      const { transactions, categories } = await this.transactionService.findAll(+userId);
       return res.status(HttpStatus.OK).json({
         status: true,
-        data: transactions,
+        data: { transactions, categories },
         message: 'Transactions fetched successfully'
       });
     } catch (error) {

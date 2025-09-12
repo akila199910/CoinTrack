@@ -59,11 +59,18 @@ export class TransactionService {
     }
   }
   async findAll(userId: number) {
-    return this.transactionRepository.find({
+
+    const categories = await this.categoryRepository.find({
+      where: { user: { id: userId }, status: true },
+      select: ['id', 'name']
+    });
+    
+    const transactions = await this.transactionRepository.find({
       where: { user: { id: userId } },
       relations: ['category'],
       select: ['id', 'amount', 'date', 'description', 'status', 'category'],
     });
+    return { transactions, categories };
   }
 
   async findOne(id: number) {

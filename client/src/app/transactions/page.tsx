@@ -23,92 +23,112 @@ type Transaction = {
   status: boolean;
   category: Category;
 }
-
-const transactionsColumns: ColumnDef<Transaction>[] = [
-  {
-    id: "index",
-    header: "#",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-500">
-        {row.index + 1}
-      </span>
-    ),
-    size: 60
-  },
-  {
-    id: "category",
-    header: "Category",
-    accessorKey: "category",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-500">
-        {row.original.category.name}
-      </span>
-    ),
-    size: 100
-  },
-  {
-    id: "type",
-    header: "Type",
-    accessorKey: "type",
-    cell: ({ row }) => (
-      <span className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-medium border 
-        ${row.original.category.type == "INCOME" ?
-          "bg-blue-100 text-blue-700 border-green-200" :
-          "bg-yellow-100 text-yellow-700 border-red-200"}`}>
-        {row.original.category.type}
-      </span>
-    ),
-    size: 100
-  },
-
-  {
-    id: "amount",
-    header: "Amount",
-    accessorKey: "amount",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-500">
-        {row.original.amount}
-      </span>
-    ),
-    size: 100
-  },
-  {
-    id: "date",
-    header: "Date",
-    accessorKey: "date",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-500">
-        {row.original.date}
-      </span>
-    ),
-    size: 100
-  },
-  {
-    id: "description",
-    header: "Description",
-    accessorKey: "description",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-500">
-        {row.original.description}
-      </span>
-    ),
-    size: 100
-  },
-
-]
 const page = () => {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([])
 
+  const transactionsColumns: ColumnDef<Transaction>[] = [
+    {
+      id: "index",
+      header: "#",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-gray-500">
+          {row.index + 1}
+        </span>
+      ),
+      size: 60
+    },
+    {
+      id: 'category',
+      accessorFn: (row) => row.category.name,
+      header: ({ column }) => (
+        <div className="flex items-center gap-2">
+          <select
+            className="border rounded px-2 py-1 text-xs"
+            value={(column.getFilterValue() as string) ?? 'ALL'}
+            onChange={(e) =>
+              column.setFilterValue(e.target.value === 'ALL' ? undefined : e.target.value)
+            }
+          >
+            <option value="ALL" className="text-xs font-medium ">All Category</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.name} className="text-xs" title={c.name}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      ),
+      filterFn: 'equalsString',
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-gray-500">
+          {row.original.category.name}
+        </span>
+      ),
+      size: 160,
+    },
+  
+    {
+      id: "type",
+      header: "Type",
+      accessorKey: "type",
+      cell: ({ row }) => (
+        <span className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-medium border 
+          ${row.original.category.type == "INCOME" ?
+            "bg-blue-100 text-blue-700 border-green-200" :
+            "bg-yellow-100 text-yellow-700 border-red-200"}`}>
+          {row.original.category.type}
+        </span>
+      ),
+      size: 100
+    },
+  
+    {
+      id: "amount",
+      header: "Amount",
+      accessorKey: "amount",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-gray-500">
+          {row.original.amount}
+        </span>
+      ),
+      size: 100
+    },
+    {
+      id: "date",
+      header: "Date",
+      accessorKey: "date",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-gray-500">
+          {row.original.date}
+        </span>
+      ),
+      size: 100
+    },
+    {
+      id: "description",
+      header: "Description",
+      accessorKey: "description",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-gray-500">
+          {row.original.description}
+        </span>
+      ),
+      size: 100
+    },
+  
+  ]
   const getTransactions = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await getTransactionsApi();
-      setTransactions(response.data.data);
+      setTransactions(response.data.data.transactions);
+      setCategories(response.data.data.categories);
       setTimeout(() => {
         setLoading(false);
       }, 2000);
@@ -141,21 +161,21 @@ const page = () => {
   const handleCreateTransaction = async (transactionData: TransactionSubmitData) => {
     setLoading(true);
     try {
-        await createTransactionApi( transactionData );
+      await createTransactionApi(transactionData);
 
-        await getTransactions();
-        setIsModalOpen(false);
+      await getTransactions();
+      setIsModalOpen(false);
     } catch (err) {
       setTimeout(() => {
         setLoading(false);
       }, 2000);
-        throw err;
+      throw err;
     } finally {
-        setTimeout(() => {
-            setLoading(false);
-        }, 2000);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }
-};
+  };
 
   if (loading) {
     return (
