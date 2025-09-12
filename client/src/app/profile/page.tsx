@@ -19,20 +19,15 @@ const ProfilePage = () => {
     const [updateError, setUpdateError] = useState<string>("");
     const [updateSuccess, setUpdateSuccess] = useState<string>("");
 
-    const { logout } = useAuth();
-
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
         setValue,
-        watch,
     } = useForm<ProfileUpdateData>({
         resolver: zodResolver(profileUpdateSchema),
         mode: "onSubmit",
     });
-
-    const password = watch("password");
 
     const getProfileData = async () => {
         setLoading(true);
@@ -64,11 +59,7 @@ const ProfilePage = () => {
         setUpdateSuccess("");
 
         try {
-
-            const { confirmPassword, ...updateData } = data;
-
-            const response = await updateProfile(updateData);
-
+            const response = await updateProfile(data);
             if (response.status === 200 || response.status === 201) {
                 setUpdateSuccess("Profile updated successfully!");
 
@@ -189,7 +180,6 @@ const ProfilePage = () => {
 
                     <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default md:max-w-3xl mx-auto">
                         <div className="relative z-20 h-35 md:h-65">
-
                             <Image
                                 src={profileData.profile?.coverUrl === 'cover.jpg' ? CoverOne : `http://localhost:4000/uploads/${profileData.profile?.coverUrl}`}
                                 alt="profile cover"
@@ -224,11 +214,11 @@ const ProfilePage = () => {
                         </div>
                         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
                             <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-                                <div className="relative">
+                                <div className="relative flex items-center justify-center h-full w-full">
                                     <Image
                                         src={profileData.profile?.avatarUrl === 'user.png' ? userImage : `http://localhost:4000/uploads/${profileData.profile?.avatarUrl}`}
                                         alt="profile avatar"
-                                        className="w-full h-full rounded-full object-cover"
+                                        className="w-full h-full rounded-full object-cover object-center"
                                         width={176}
                                         height={176}
                                         onError={(e) => {
@@ -379,7 +369,7 @@ const ProfilePage = () => {
                                             )}
                                         </div>
 
-                                        <div className="mb-8 flex flex-col gap-6 xl:flex-row">
+                                        {/* <div className="mb-8 flex flex-col gap-6 xl:flex-row">
                                             <div className="w-full xl:w-1/2">
                                                 <label className="mb-3 block text-sm font-semibold text-gray-700">
                                                     Password <span className="text-gray-500 text-xs font-normal">(Optional)</span>
@@ -419,7 +409,7 @@ const ProfilePage = () => {
                                                     </p>
                                                 )}
                                             </div>
-                                        </div>
+                                        </div> */}
 
                                         <button
                                             type="submit"

@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react'
-import userI from '../icons/user.svg'
+import userI from '../icons/user.jpeg'
 import Image from 'next/image';
-import profile from '../icons/profile.svg'
+import profile from '../icons/user.svg'
 import contact from '../icons/contact.svg'
 import settings from '../icons/settings.svg'
 import logoutI from '../icons/logout.svg'
@@ -21,7 +21,7 @@ const DropdownUser = () => {
                 className="flex items-center gap-4"
                 href="#"
             >
-                <span className="hidden text-right lg:block">
+                <span className="hidden text-right sm:block">
                     <span className="block text-sm font-medium">
                         {user?.name}
                     </span>
@@ -29,7 +29,7 @@ const DropdownUser = () => {
                 </span>
 
                 <span className="h-12 w-12 rounded-full flex items-center justify-center">
-                    <Image src={userI} alt="User" />
+                    <Image src={userI} alt="User" height={40} width={40} className="rounded-full" />
                 </span>
             </Link>
 

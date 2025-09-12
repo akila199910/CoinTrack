@@ -1,7 +1,6 @@
 "use client";
 import Image from 'next/image'
 import coin from '../../../public/coin.svg'
-import userI from '../../../public/user.svg'
 import Link from 'next/link'
 import menu from '../icons/menu.svg'
 import DropdownUser from './DropdownUser';
@@ -26,7 +25,7 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
               e.stopPropagation();
               setSidebarOpen(!sidebarOpen);
             }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm lg:hidden"
           >
             <Image src={menu} alt="Logo" />
           </button>
