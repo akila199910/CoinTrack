@@ -4,15 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema, TransactionSubmitData } from "../validation/transaction";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useCategories } from "../hooks/useCategories";
 
 interface CreateTransactionModalProps {
     isOpen: boolean;
+    categories: [{id: number;name: string;}];
     onClose: () => void;
     onSubmit: (transactionData: TransactionSubmitData) => Promise<void>;
 }
 
-const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp }) => {
+const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, categories }) => {
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(transactionSchema),
@@ -21,8 +21,6 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    // const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
-
     const onSubmit = async (data: TransactionSubmitData) => {
         console.log('Form submitted with data:', data);
         setLoading(true);
@@ -127,26 +125,17 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                         <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
                             Select Category *
                         </label>
-                        {/* <select
+                        <select
                             id="category_id"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             {...register("category_id")}
-                            disabled={categoriesLoading}
                         >
-                            <option value="">
-                                {categoriesLoading ? "Loading categories..." : "Select Category"}
-                            </option>
                             {categories.map((category) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
                             ))}
                         </select>
-                        {categoriesError && (
-                            <p className="text-sm text-red-600">
-                                {categoriesError}
-                            </p>
-                        )} */}
                         {errors.category_id && (
                             <p className="text-sm text-red-600">
                                 {errors.category_id.message}

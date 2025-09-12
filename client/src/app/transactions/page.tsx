@@ -29,7 +29,7 @@ const page = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([])
+  const [categories, setCategories] = useState<[{id: number;name: string;}]>([{id: 0, name: ''}]);
 
   const transactionsColumns: ColumnDef<Transaction>[] = [
     {
@@ -228,6 +228,7 @@ const page = () => {
       />
 
       <TransactionModal
+        categories={categories}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTransaction}
