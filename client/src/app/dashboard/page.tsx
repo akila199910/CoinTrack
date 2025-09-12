@@ -21,15 +21,14 @@ interface DashboardData {
 
 export default function Dashboard() {
     const { user } = useAuth();
-    const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(false);
-    const [customStartDate, setCustomStartDate] = useState('');
-    const [customEndDate, setCustomEndDate] = useState('');
+    const [fromDate, setFromDate] = useState(new Date().toISOString().split('T')[0]);
+    const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
     const [error, setError] = useState<string | null>(null);
-    const getDashboardData = async (period?: string, startDate?: string, endDate?: string) => {
+    const getDashboardData = async (fromDate?: string, toDate?: string) => {
 
-        const response = await getDashboardDataApi(period, startDate, endDate);
+        const response = await getDashboardDataApi(fromDate, toDate);
         setLoading(true);
         try {
             setDashboardData(response.data.data);
@@ -50,31 +49,9 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        if (selectedPeriod === 'custom' && customStartDate && customEndDate) {
-            getDashboardData('custom', customStartDate, customEndDate);
-        } else if (selectedPeriod !== 'custom') {
-            getDashboardData(selectedPeriod);
-        }
-    }, [selectedPeriod, customStartDate, customEndDate]);
+        getDashboardData(fromDate, toDate);
+    }, [fromDate, toDate]);
 
-    const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year' | 'custom') => {
-        setSelectedPeriod(period);
-    };
-
-    const handleCustomDateSubmit = () => {
-        if (customStartDate && customEndDate) {
-            getDashboardData('custom', customStartDate, customEndDate);
-        } else {
-            setError('Please select a date range');
-            setTimeout(() => {
-                setLoading(false);
-            }, 2000);
-        }
-    };
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString();
-    };
 
     if (loading) {
         return (
@@ -95,70 +72,32 @@ export default function Dashboard() {
 
     return (
         <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
                 Welcome to Coin Tracker Dashboard
             </h1>
 
-            {/* Predefined Period Buttons */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
-                {[
-                    { key: 'today', label: 'TODAY' },
-                    { key: 'week', label: 'THIS WEEK' },
-                    { key: 'month', label: 'THIS MONTH' },
-                    { key: 'year', label: 'THIS YEAR' }
-                ].map(({ key, label }) => (
-                    <div
-                        key={key}
-                        className={`flex items-center justify-center py-4 rounded-lg shadow-md border text-center font-bold cursor-pointer transition-colors ${selectedPeriod === key
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-900 hover:bg-blue-100'
-                            }`}
-                        onClick={() => handlePeriodChange(key as 'today' | 'week' | 'month' | 'year')}
-                    >
-                        <span>{label}</span>
-                    </div>
-                ))}
-            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md border mb-6 md:max-w-3xl md:mx-auto">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4 text-center uppercase p-2 bg-blue-100 border border-blue-200 rounded-lg">From {fromDate} To {toDate}</h3>
 
-            {/* Custom Date Range Section */}
-            <div className="bg-white p-6 rounded-lg shadow-md border mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Custom Date Range</h3>
-                <div className="flex flex-col md:flex-row gap-4 items-end">
-                    <div className="flex-1">
+                <div className="flex flex-col md:flex-row gap-4 items-center max-w-3xl">
+                    <div className="flex flex-col w-full">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
                         <input
                             type="date"
-                            value={customStartDate}
-                            onChange={(e) => setCustomStartDate(e.target.value)}
+                            value={fromDate}
+                            onChange={(e) => setFromDate(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex flex-col w-full">
                         <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
                         <input
                             type="date"
-                            value={customEndDate}
-                            onChange={(e) => setCustomEndDate(e.target.value)}
+                            value={toDate}
+                            onChange={(e) => setToDate(e.target.value)}
+                            min={fromDate}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                    </div>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => handlePeriodChange('custom')}
-                            className={`px-4 py-2 rounded-md font-medium transition-colors ${selectedPeriod === 'custom'
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                }`}
-                        >
-                            Apply Custom Range
-                        </button>
-                        <button
-                            onClick={handleCustomDateSubmit}
-                            disabled={!customStartDate || !customEndDate}
-                            className="px-4 py-2 bg-green-500 text-white rounded-md font-medium hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                        >
-                            Submit
-                        </button>
                     </div>
                 </div>
             </div>
@@ -185,9 +124,9 @@ export default function Dashboard() {
                             <p className="text-3xl font-bold text-green-600">
                                 {dashboardData.totalIncome}
                             </p>
-                            {/* <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 mt-1">
                                 {dashboardData.income.length} transactions
-                            </p> */}
+                            </p>
                         </div>
 
                         <div className="bg-white p-6 rounded-lg shadow-md border">
@@ -197,9 +136,9 @@ export default function Dashboard() {
                             <p className="text-3xl font-bold text-red-600">
                                 {dashboardData.totalExpense}
                             </p>
-                            {/* <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 mt-1">
                                 {dashboardData.expense.length} transactions
-                            </p> */}
+                            </p>
                         </div>
                     </div>
 
@@ -216,11 +155,11 @@ export default function Dashboard() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Income Transactions */}
-                        <div className="bg-white p-6 rounded-lg shadow-md border">
+                        {/* <div className="bg-white p-6 rounded-lg shadow-md border">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                                 Income Transactions
                             </h3>
-                            {/* {dashboardData.income.length > 0 ? (
+                            {dashboardData.income.length > 0 ? (
                                 <div className="space-y-3">
                                     {dashboardData.income.slice(0, 5).map((transaction) => (
                                         <div key={transaction.id} className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
@@ -230,7 +169,7 @@ export default function Dashboard() {
                                                 <p className="text-xs text-gray-500">{formatDate(transaction.date)}</p>
                                             </div>
                                             <p className="font-bold text-green-600">
-                                                +{formatCurrency(parseFloat(transaction.amount))}
+                                                +{parseFloat(transaction.amount)}
                                             </p>
                                         </div>
                                     ))}
@@ -244,15 +183,15 @@ export default function Dashboard() {
                                 <div className="text-center py-8 text-gray-500">
                                     <p>No income transactions</p>
                                 </div>
-                            )} */}
-                        </div>
+                            )}
+                        </div> */}
 
                         {/* Expense Transactions */}
-                        <div className="bg-white p-6 rounded-lg shadow-md border">
+                        {/* <div className="bg-white p-6 rounded-lg shadow-md border">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                                 Expense Transactions
                             </h3>
-                            {/* {dashboardData.expense.length > 0 ? (
+                            {dashboardData.expense.length > 0 ? (
                                 <div className="space-y-3">
                                     {dashboardData.expense.slice(0, 5).map((transaction) => (
                                         <div key={transaction.id} className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
@@ -262,7 +201,7 @@ export default function Dashboard() {
                                                 <p className="text-xs text-gray-500">{formatDate(transaction.date)}</p>
                                             </div>
                                             <p className="font-bold text-red-600">
-                                                -{formatCurrency(parseFloat(transaction.amount))}
+                                                -{parseFloat(transaction.amount)}
                                             </p>
                                         </div>
                                     ))}
@@ -276,18 +215,8 @@ export default function Dashboard() {
                                 <div className="text-center py-8 text-gray-500">
                                     <p>No expense transactions</p>
                                 </div>
-                            )} */}
-                        </div>
-                    </div>
-
-                    {/* Period Information */}
-                    <div className="mt-6 bg-white p-4 rounded-lg shadow-md border">
-                        <p className="text-sm text-gray-600 text-center">
-                            Showing data for: <span className="font-semibold capitalize">{dashboardData.period}</span>
-                            {dashboardData.dateRange && (
-                                <span> ({formatDate(dashboardData.dateRange.startDate)} - {formatDate(dashboardData.dateRange.endDate)})</span>
                             )}
-                        </p>
+                        </div> */}
                     </div>
                 </>
             )}

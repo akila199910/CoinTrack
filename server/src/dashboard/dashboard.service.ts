@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from 'src/category/entities/category.entity';
 import { Transaction } from 'src/transaction/entities/transaction.entity';
 import { Repository, Between } from 'typeorm';
 
@@ -10,20 +9,48 @@ export enum Type { INCOME = 'INCOME', EXPENSE = 'EXPENSE' }
 export class DashboardService {
     constructor(
         @InjectRepository(Transaction) private readonly transactionRepository: Repository<Transaction>,
-        @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
     ) {}
 
-    async getTransactionsData(userId: number, startDate?: Date, endDate?: Date) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        const start = startDate || today;
-        const end = endDate || new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1);
+    parseYMDToLocalDate(s: string): Date {
+        const [y, m, d] = s.split('-').map(Number);
+        return new Date(y, m - 1, d, 0, 0, 0, 0);
+      }
+      
+      startOfDayLocal(d: Date) {
+        const copy = new Date(d);
+        copy.setHours(0, 0, 0, 0);
+        return copy;
+      }
+      
+      endOfDayLocal(d: Date) {
+        const copy = new Date(d);
+        copy.setHours(23, 59, 59, 999);
+        return copy;
+      }
+    async getTransactionsData(userId: number, fromDate?: string, toDate?: string) {
+        let start: Date;
+        let end: Date;
 
-        const whereCondition = {
+        if (fromDate && !toDate) {
+            const s = this.parseYMDToLocalDate(fromDate);
+            start = this.startOfDayLocal(s);
+            end = this.endOfDayLocal(s);
+          } else if (fromDate && toDate) {
+            const s = this.parseYMDToLocalDate(fromDate);
+            const e = this.parseYMDToLocalDate(toDate);
+            if (s > e) [start, end] = [this.startOfDayLocal(e), this.endOfDayLocal(s)];
+            else { start = this.startOfDayLocal(s); end = this.endOfDayLocal(e); }
+          } else {
+            const today = new Date();
+            start = this.startOfDayLocal(today);
+            end = this.endOfDayLocal(today);
+          }
+   
+
+    const whereCondition = {
             user: { id: userId },
             date: Between(start, end)
-        };
+        } 
 
         const transactionsArray = await this.transactionRepository.find({
             where: { ...whereCondition },
@@ -92,47 +119,5 @@ export class DashboardService {
             transactionCount: incomeTransactions.length + expenseTransactions.length
         };
         
-    }
-    getDateRange(period: 'today' | 'week' | 'month' | 'year') {
-        const now = new Date();
-        const today = new Date(now);
-        today.setHours(0, 0, 0, 0);
-
-        switch (period) {
-            case 'today':
-                return {
-                    startDate: today,
-                    endDate: new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1)
-                };
-            
-            case 'week':
-                const startOfWeek = new Date(today);
-                startOfWeek.setDate(today.getDate() - today.getDay());
-                console.log(startOfWeek);
-                return {
-                    startDate: startOfWeek,
-                    endDate: new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000 - 1)
-                };
-            
-            case 'month':
-                const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-                const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
-                console.log(startOfMonth, endOfMonth);
-                return {
-                    startDate: startOfMonth,
-                    endDate: endOfMonth
-                };
-            
-            case 'year':
-                const startOfYear = new Date(today.getFullYear(), 0, 1);
-                const endOfYear = new Date(today.getFullYear(), 11, 31, 23, 59, 59, 999);
-                return {
-                    startDate: startOfYear,
-                    endDate: endOfYear
-                };
-            
-            default:
-                return this.getDateRange('today');
-        }
     }
 }

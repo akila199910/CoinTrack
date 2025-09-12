@@ -8,16 +8,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export const getDashboardDataApi = async (period?: string, startDate?: string, endDate?: string) => {
+export const getDashboardDataApi = async (fromDate?: string, toDate?: string) => {
 
-  let url = '/dashboard';
-  if (period) {
-    url += `?period=${period}`;
-  }
-  else if (startDate && endDate) {
-    url += `?startDate=${startDate}&endDate=${endDate}`;
-  }
-
+  let url = `/dashboard?fromDate=${fromDate}&toDate=${toDate}`;
   const response = await api.get(url);
   return response;
 };
