@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import editIcon from "../icons/edit.svg";
+import deleteIcon from "../icons/delete.svg";
+import viewIcon from "../icons/view.svg";
 import {
   ColumnDef,
   flexRender,
@@ -11,6 +14,7 @@ import {
   useReactTable,
   SortingState,
 } from "@tanstack/react-table";
+import Image from "next/image";
 
 export interface DataTableProps<T> {
   data: T[];
@@ -21,6 +25,7 @@ export interface DataTableProps<T> {
   onAdd?: () => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+  onView?: (row: T) => void;
   emptyStateTitle?: string;
   emptyStateDescription?: string;
   pageSizeOptions?: number[];
@@ -38,6 +43,7 @@ export default function DataTable<T>({
   onAdd,
   onEdit,
   onDelete,
+  onView,
   emptyStateTitle = "No data found",
   emptyStateDescription = "Try adjusting your search criteria",
   pageSizeOptions = [5, 10, 20, 50],
@@ -49,36 +55,41 @@ export default function DataTable<T>({
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columnsWithActions = React.useMemo(() => {
-    if (!onEdit && !onDelete) return columns;
+    if (!onEdit && !onDelete && !onView) return columns;
 
     const actionsColumn: ColumnDef<T> = {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex items-center space-x-2">
+          {onView && (
+            <button
+              onClick={() => onView(row.original)}
+            >
+              <Image src={viewIcon} alt="View" className="w-4 h-4 cursor-pointer"  />
+            </button>
+          )}
           {onEdit && (
             <button
               onClick={() => onEdit(row.original)}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
             >
-              Edit
+              <Image src={editIcon} alt="Edit" className="w-4 h-4 cursor-pointer"  />
             </button>
           )}
           {onDelete && (
             <button
               onClick={() => onDelete(row.original)}
-              className="text-red-600 hover:text-red-800 text-sm font-medium"
             >
-              Delete
+              <Image src={deleteIcon} alt="Delete" className="w-4 h-4 cursor-pointer"  />
             </button>
-          )}
+          )}  
         </div>
       ),
       size: 120,
     };
 
     return [...columns, actionsColumn];
-  }, [columns, onEdit, onDelete]);
+  }, [columns, onEdit, onDelete, onView]);
 
   const table = useReactTable({
     data,

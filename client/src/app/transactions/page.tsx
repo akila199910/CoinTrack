@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { createTransactionApi, getTransactionsApi } from "../api/transactionApi";
 import TransactionModal from "../components/TransactionModal";
 import { TransactionSubmitData } from "../validation/transaction";
+import TransactionViewModel from "../components/TransactionViewModel";
 
 type Category = {
   id: number;
@@ -29,7 +30,10 @@ const page = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [categories, setCategories] = useState<[{id: number;name: string;}]>([{id: 0, name: ''}]);
+  const [modelName, setModelName] = useState('Create Transaction');
+  const [transactionData, setTransactionData] = useState<Transaction | null>(null);
 
   const transactionsColumns: ColumnDef<Transaction>[] = [
     {
@@ -49,12 +53,12 @@ const page = () => {
         <div className="flex items-center gap-2">
           <select
             className="border rounded px-2 py-1 text-xs"
-            value={(column.getFilterValue() as string) ?? 'ALL'}
+            value={(column.getFilterValue() as string) ?? 'ALL CATEGORY'}
             onChange={(e) =>
-              column.setFilterValue(e.target.value === 'ALL' ? undefined : e.target.value)
+              column.setFilterValue(e.target.value === 'ALL CATEGORY' ? undefined : e.target.value)
             }
           >
-            <option value="ALL" className="text-xs font-medium ">All Category</option>
+            <option value="ALL CATEGORY" className="text-xs font-medium ">All CATEGORY</option>
             {categories.map((c) => (
               <option key={c.id} value={c.name} className="text-xs" title={c.name}>
                 {c.name}
@@ -152,12 +156,17 @@ const page = () => {
     setIsModalOpen(true);
   };
   const handleEditTransaction = (transaction: Transaction) => {
+    setModelName('Edit Transaction');
     setIsModalOpen(true);
   };
   const handleDeleteTransaction = (transaction: Transaction) => {
     setIsModalOpen(true);
   };
-
+  const handleViewTransaction = (transaction: Transaction) => {
+    setModelName('View Transaction');
+    setTransactionData(transaction);
+    setIsViewModalOpen(true);
+  };
   const handleCreateTransaction = async (transactionData: TransactionSubmitData) => {
     setLoading(true);
     try {
@@ -223,6 +232,7 @@ const page = () => {
         onAdd={handleAddTransaction}
         onEdit={handleEditTransaction}
         onDelete={handleDeleteTransaction}
+        onView={handleViewTransaction}
         emptyStateTitle="No transactions found"
         emptyStateDescription="Try adjusting your search criteria"
       />
@@ -232,6 +242,14 @@ const page = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTransaction}
+        modelName={modelName}
+      />
+
+      <TransactionViewModel
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        modelName={modelName}
+        transactionData={transactionData}
       />
     </div>
   )

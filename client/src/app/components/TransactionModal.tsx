@@ -10,9 +10,10 @@ interface CreateTransactionModalProps {
     categories: [{id: number;name: string;}];
     onClose: () => void;
     onSubmit: (transactionData: TransactionSubmitData) => Promise<void>;
+    modelName: string;
 }
 
-const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, categories }) => {
+const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, categories, modelName }) => {
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(transactionSchema),
@@ -22,14 +23,11 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const onSubmit = async (data: TransactionSubmitData) => {
-        console.log('Form submitted with data:', data);
         setLoading(true);
         setError(null);
         try {
             await onSubmitProp(data);
-            console.log('Transaction created successfully');
         } catch (err) {
-            console.error('Error creating transaction:', err);
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
             setLoading(false);
@@ -37,9 +35,6 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
     }
 
     const handleFormSubmit = (e: React.FormEvent) => {
-        console.log('Form submit event triggered');
-        console.log('Form errors:', errors);
-        console.log('Form isSubmitting:', isSubmitting);
         handleSubmit(onSubmit)(e);
     }
 
@@ -49,7 +44,7 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
         <div className="fixed inset-0 bg-blue-200 bg-opacity-50 flex items-center justify-center z-9999">
             <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl/30">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-gray-900">Create New Transaction</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">{modelName}</h2>
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-gray-600"
@@ -153,12 +148,13 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                         >
                             Cancel
                         </button>
+                        
                         <button
                             type="submit"
                             disabled={loading || isSubmitting}
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
                         >
-                            {loading || isSubmitting ? 'Creating...' : 'Create Transaction'}
+                            {loading || isSubmitting ? 'Creating...' : modelName}
                         </button>
                     </div>
                 </form>

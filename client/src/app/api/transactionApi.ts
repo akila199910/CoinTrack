@@ -16,3 +16,7 @@ export const createTransactionApi = async (transactionData: TransactionSubmitDat
     const response = await api.post("/transaction", transactionData);
     return response;
 };
+export const getTransactionByIdApi = async (id: number) => {
+    const response = await api.get(`/transaction/${id}`);
+    return response;
+};
