@@ -36,28 +36,33 @@ export class CategoryService {
     });
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto, userId: number) {
-    const category = await this.categoryRepository.findOne({
-      where: { id: id, user: { id: userId } },
-    });
-    if (!category) {
-      return null;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    try {
+        const category = await this.categoryRepository.findOne({
+          where: { id: id },
+        });
+        if (!category) {
+          return {
+            status: false,
+            data: [],
+            message: 'Category not found'
+          }
+        }
+        const updateCategory = await this.categoryRepository.save({...category, ...updateCategoryDto});
+        return {
+          status: true,
+          data: updateCategory,
+          message: 'Category updated successfully'
+        }
+      
+      }catch(error) {
+        return {
+          status: false,
+          data: [],
+          errors: error,
+          message: 'Internal server error while updating category'
+      }
     }
-    
-    if (updateCategoryDto.name !== undefined) {
-      category.name = updateCategoryDto.name;
-    }
-    if (updateCategoryDto.description !== undefined) {
-      category.description = updateCategoryDto.description;
-    }
-    if (updateCategoryDto.status !== undefined) {
-      category.status = updateCategoryDto.status;
-    }
-    if (updateCategoryDto.type !== undefined) {
-      category.type = updateCategoryDto.type;
-    }
-    
-    return this.categoryRepository.save(category);
   }
 
   async remove(id: number, userId: number) {

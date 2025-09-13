@@ -1,12 +1,12 @@
 import React from 'react'
 
 type Category = {
-  id: number;
+  id: number | null;
   name: string;
   description: string | null;
   image: string;
   status: boolean;
-  type: string;
+  type: "INCOME" | "EXPENSE" | "SAVINGS";
 }
 interface CategoryViewModelProps {
   isOpen: boolean;

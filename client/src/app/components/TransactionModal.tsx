@@ -43,7 +43,6 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        console.log('useEffect triggered with transactionData:', transactionData);
         if (transactionData) {
             const formData = {
                 id: transactionData.id.toString(),
@@ -53,7 +52,6 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                 category_id: transactionData.category.id.toString(),
                 status: "true"
             };
-            console.log('Resetting form with edit data:', formData);
             reset(formData);
         } else {
             const formData = {
@@ -63,26 +61,20 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                 category_id: "",
                 status: "true"
             };
-            console.log('Resetting form with create data:', formData);
             reset(formData);
         }
     }, [transactionData, reset]);
+
     const onSubmit = async (data: TransactionSubmitData | UpdateTransactionSubmitData) => {
         setLoading(true);
         setError(null);
-        console.log('Form submitted with data:', data);
-        console.log('Is edit mode:', isEditMode);
-        console.log('Transaction data:', transactionData);
         try {
             if (transactionData) {
-                console.log('Calling onUpdate with:', data);
                 await onUpdateProp(data as UpdateTransactionSubmitData);
             } else {
-                console.log('Calling onSubmit with:', data);
                 await onSubmitProp(data as TransactionSubmitData);
             }
         } catch (err) {
-            console.error('Error in form submission:', err);
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
             setLoading(false);

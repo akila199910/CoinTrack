@@ -87,24 +87,25 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto, @Req() req: any, @Res() res: Response): Promise<Response> {
     try {
-      const userId = req.user.sub;
-      const category = await this.categoryService.update(+id, updateCategoryDto, userId);
-      if (!category) {
+      const category = await this.categoryService.update(+id, updateCategoryDto);
+      
+      if (!category.status) {
         return res.status(HttpStatus.NOT_FOUND).json({
           status: false,
-          data: [],
-          message: 'Category not found'
+          data: category.data,
+          message: category.message
         });
       }
       return res.status(HttpStatus.OK).json({
-        status: true,
-        data: category,
-        message: 'Category updated successfully'
+        status: category.status,
+        data: category.data,
+        message: category.message
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         status: false,
         data: [],
+        error: error,
         message: 'Internal server error'
       });
     }

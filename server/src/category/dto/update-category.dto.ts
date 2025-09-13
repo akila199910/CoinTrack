@@ -1,17 +1,7 @@
-import { IsBoolean, IsEnum, IsOptional, IsString, Length } from "class-validator";
-import { Type } from "../entities/category.entity";
+import { PartialType } from "@nestjs/mapped-types";
+import { CreateCategoryDto } from "./create-category.dto";
 
-export class UpdateCategoryDto {
-    @IsOptional() @IsString() @Length(1, 15) 
-    name?: string;
-
-    @IsOptional() @IsString() @Length(1, 255) 
-    description?: string;
-
-    @IsOptional() @IsBoolean()  
-    status?: boolean;
-
-    @IsOptional() @IsEnum(Type)
-    type?: Type;
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
+    
 
 }

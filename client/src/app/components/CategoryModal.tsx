@@ -1,11 +1,13 @@
 "use client";
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
-import { categorySchema, CategorySubmitData } from '../validation/category';
+import React, { useEffect, useState } from 'react';
+import { categorySchema, CategorySubmitData, updateCategorySchema, UpdateCategorySubmitData } from '../validation/category';
 import { useForm } from 'react-hook-form';
+import { TransactionSubmitData, UpdateTransactionSubmitData } from '../validation/transaction';
 
 type Category = {
+    id: number | null;
     name: string;
     description: string | null;
     image: string;
@@ -16,22 +18,55 @@ interface CreateCategoryModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (categoryData: CategorySubmitData) => Promise<void>;
+    onUpdate: (categoryData: UpdateCategorySubmitData) => Promise<void>;
+    modelName: string;
+    categoryData: Category | null;
 }
 
-const CategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp }) => {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<CategorySubmitData>({
-        resolver: zodResolver(categorySchema),
+const CategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, onUpdate: onUpdateProp, modelName, categoryData }) => {
+    const isEditMode = !!categoryData;
+
+    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
+        resolver: zodResolver(isEditMode ? updateCategorySchema : categorySchema),
         mode: "onSubmit",
-        defaultValues: { name: '', description: '', type: 'INCOME', image: '' },
+        
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const onSubmit = async (data: CategorySubmitData) => {
+    useEffect(() => {
+        if (categoryData) {
+            const formData = {
+                id: categoryData.id?.toString() || "",
+                name: categoryData.name,
+                description: categoryData.description || "",
+                image: categoryData.image,
+                status: categoryData.status || true,
+                type: categoryData.type as "INCOME" | "EXPENSE" | "SAVINGS"
+            };
+            reset(formData);
+        } else {
+            const formData = {
+                id: "",
+                name: "",
+                description: "",
+                image: "",
+                status: true,
+                type: "INCOME" as "INCOME" | "EXPENSE" | "SAVINGS"
+            }
+            reset(formData);
+        }
+    }, [categoryData, reset]);
+
+    const onSubmit = async (data: CategorySubmitData | UpdateCategorySubmitData) => {
         setLoading(true);
         setError(null);
         try {
-            await onSubmitProp(data);
+            if (categoryData) {
+                await onUpdateProp(data as UpdateCategorySubmitData);
+            } else {
+                await onSubmitProp(data as CategorySubmitData);
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
@@ -45,7 +80,7 @@ const CategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, on
         <div className="fixed inset-0 bg-blue-200 bg-opacity-50 flex items-center justify-center z-9999">
             <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl/30">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-gray-900">Create New Category</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">{modelName}</h2>
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-gray-600"
@@ -124,7 +159,7 @@ const CategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, on
                             Image URL
                         </label>
                         <input
-                            type="url"
+                            type="text"
                             id="image"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="https://example.com/image.jpg"
@@ -145,7 +180,7 @@ const CategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, on
                             disabled={loading || isSubmitting}
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
                         >
-                            {loading || isSubmitting ? 'Creating...' : 'Create Category'}
+                            {loading || isSubmitting ? 'Creating...' : modelName}
                         </button>
                     </div>
                 </form>

@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react'
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-import { getCategoriesApi, createCategoryApi } from '../api/categoryApi';
+import { getCategoriesApi, createCategoryApi, updateCategoryApi } from '../api/categoryApi';
 import CategoryModal from '../components/CategoryModal';
-import { CategorySubmitData } from '../validation/category';
+import { CategorySubmitData, UpdateCategorySubmitData } from '../validation/category';
 import DataTable from '../components/DataTable';
 import CategoryViewModel from '../components/CategoryViewModel';
 
@@ -20,12 +20,12 @@ const isValidUrl = (string: string): boolean => {
 };
 
 type Category = {
-    id: number;
+    id: number | null;
     name: string;
     description: string | null;
     image: string;
     status: boolean;
-    type: string;
+    type: "INCOME" | "EXPENSE" | "SAVINGS";
 };
 
 const categoriesColumns: ColumnDef<Category>[] = [
@@ -155,6 +155,7 @@ const Page = () => {
     }, []);
 
     const handleAddCategory = () => {
+        setModelName('Create New Category');
         setIsModalOpen(true);
     };
 
@@ -174,8 +175,25 @@ const Page = () => {
     };
 
     const handleEditCategory = (category: Category) => {
+        setModelName('Edit Category');
         setCategoryData(category);
-        setIsViewModelOpen(true);
+        setIsModalOpen(true);
+       
+    };
+
+    const handleUpdateCategory = async (categoryData: UpdateCategorySubmitData) => {
+        setLoading(true);
+        try {
+            await updateCategoryApi(categoryData);
+            await getCategories();
+            setIsModalOpen(false);
+        } catch (err) {
+            throw err;
+        } finally {
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
+        }
     };
 
     const handleDeleteCategory = (category: Category) => {
@@ -245,6 +263,9 @@ const Page = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleCreateCategory}
+                modelName={modelName}
+                categoryData={categoryData}
+                onUpdate={handleUpdateCategory}
             />
 
             <CategoryViewModel
