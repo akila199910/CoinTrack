@@ -33,4 +33,14 @@ export const transactionSchema = z.object({
 
 });
 
+export const updateTransactionSchema = z.object({
+  id: z.string().transform((v) => Number(v)).refine((v) => v > 0, "Id is required"),
+  amount: z.optional(z.string().transform((v) => Number(v)).refine((v) => v >= 1, "Amount must be at least 1")),
+  description: z.optional(z.string().max(255, "Description must be less than 255 characters").optional()),
+  date: z.optional(z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")),
+  status: z.optional(z.string().transform((v) => v === "true").optional()),
+  category_id: z.optional(z.string().transform((v) => Number(v)).refine((v) => v > 0, "Category is required")),
+});
+
+export type UpdateTransactionSubmitData = z.infer<typeof updateTransactionSchema>;
 export type TransactionSubmitData = z.infer<typeof transactionSchema>;

@@ -93,8 +93,23 @@ export class TransactionService {
      };
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return this.transactionRepository.update(id, updateTransactionDto);
+  async update(id: number, updateTransactionDto: UpdateTransactionDto) {
+    const transaction = await this.transactionRepository.findOne({ where: { id: id } });
+     if(!transaction) {
+      return {
+        status: false,
+        data: [],
+        message: 'Transaction not found'
+      }
+     }
+     
+     const updateTransaction = await this.transactionRepository.save({...transaction, ...updateTransactionDto});
+     
+     return {
+      status: true,
+      data: updateTransaction,
+      message: 'Transaction updated successfully'
+     };
   }
 
   remove(id: number) {

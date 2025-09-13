@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards, ValidationPipe, UsePipes, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards, ValidationPipe, UsePipes, HttpStatus, Put } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -89,9 +89,31 @@ export class TransactionController {
 
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
-    return this.transactionService.update(+id, updateTransactionDto);
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  async update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto, @Req() req: any, @Res() res: Response) {
+    try {
+      const transaction = await this.transactionService.update(+id, updateTransactionDto);
+      if(!transaction.status) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          status: false,
+          data: [],
+          message: transaction.message
+        });
+      }
+      return res.status(HttpStatus.OK).json({
+        status: true,
+        data: transaction.data,
+        message: transaction.message
+      });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        data: [],
+        error:error,
+        message: 'Internal server error'
+      });
+    }
   }
 
   @Delete(':id')

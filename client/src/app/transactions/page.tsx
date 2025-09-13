@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
-import { createTransactionApi, getTransactionsApi } from "../api/transactionApi";
+import { createTransactionApi, getTransactionsApi, updateTransactionApi } from "../api/transactionApi";
 import TransactionModal from "../components/TransactionModal";
-import { TransactionSubmitData } from "../validation/transaction";
+import { TransactionSubmitData, UpdateTransactionSubmitData } from "../validation/transaction";
 import TransactionViewModel from "../components/TransactionViewModel";
 
 type Category = {
@@ -153,11 +153,32 @@ const page = () => {
     getTransactions();
   }, []);
   const handleAddTransaction = () => {
+    setModelName('Create Transaction');
+    setTransactionData(null);
     setIsModalOpen(true);
   };
   const handleEditTransaction = (transaction: Transaction) => {
     setModelName('Edit Transaction');
+    setTransactionData(transaction);
     setIsModalOpen(true);
+  };
+
+  const handleUpdateTransaction = async (transaction: UpdateTransactionSubmitData) => {
+    setLoading(true);
+    try {
+      await updateTransactionApi(transaction);
+      await getTransactions();
+      setIsModalOpen(false);
+    } catch (err) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+      throw err;
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    }
   };
   const handleDeleteTransaction = (transaction: Transaction) => {
     setIsModalOpen(true);
@@ -171,7 +192,6 @@ const page = () => {
     setLoading(true);
     try {
       await createTransactionApi(transactionData);
-
       await getTransactions();
       setIsModalOpen(false);
     } catch (err) {
@@ -242,6 +262,7 @@ const page = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTransaction}
+        onUpdate={handleUpdateTransaction}
         modelName={modelName}
         transactionData={transactionData}
       />

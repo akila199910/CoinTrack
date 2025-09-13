@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TransactionSubmitData } from "../validation/transaction";
+import { TransactionSubmitData, UpdateTransactionSubmitData } from "../validation/transaction";
 const baseUrl = "http://localhost:4000/api/v1";
 
 const api = axios.create({
@@ -18,5 +18,9 @@ export const createTransactionApi = async (transactionData: TransactionSubmitDat
 };
 export const getTransactionByIdApi = async (id: number) => {
     const response = await api.get(`/transaction/${id}`);
+    return response;
+};
+export const updateTransactionApi = async (transactionData: UpdateTransactionSubmitData) => {
+    const response = await api.put(`/transaction/${transactionData.id}`, transactionData);
     return response;
 };

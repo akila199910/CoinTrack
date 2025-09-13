@@ -1,9 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { transactionSchema, TransactionSubmitData } from "../validation/transaction";
+import { transactionSchema, TransactionSubmitData, updateTransactionSchema, UpdateTransactionSubmitData } from "../validation/transaction";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Category = {
     id: number;
@@ -21,29 +21,54 @@ type Transaction = {
     status: boolean;
     category: Category;
 }
-interface CreateTransactionModalProps {
+interface TransactionModalProps {
     isOpen: boolean;
     categories: [{ id: number; name: string; }];
     onClose: () => void;
     onSubmit: (transactionData: TransactionSubmitData) => Promise<void>;
+    onUpdate: (transactionData: UpdateTransactionSubmitData) => Promise<void>;
     modelName: string;
     transactionData: Transaction | null;
 }
+const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, onUpdate: onUpdateProp, categories, modelName, transactionData }) => {
 
-const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, categories, modelName, transactionData }) => {
-
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
-        resolver: zodResolver(transactionSchema),
+    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
+        resolver: zodResolver(transactionData ? updateTransactionSchema : transactionSchema),
         mode: "onSubmit",
     });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const onSubmit = async (data: TransactionSubmitData) => {
+
+    useEffect(() => {
+        if (transactionData) {
+            reset({
+                amount: transactionData.amount,
+                date: transactionData.date,
+                description: transactionData.description || "",
+                category_id: transactionData.category.id.toString(),
+                status: "true"
+            });
+        } else {
+            reset({
+                amount: "",
+                date: "",
+                description: "",
+                category_id: "",
+                status: "true"
+            });
+        }
+    }, [transactionData, reset]);
+    const onSubmit = async (data: TransactionSubmitData | UpdateTransactionSubmitData) => {
         setLoading(true);
         setError(null);
+        console.log(data);
         try {
-            await onSubmitProp(data);
+            if (transactionData) {
+                await onUpdateProp(data as UpdateTransactionSubmitData);
+            } else {
+                await onSubmitProp(data as TransactionSubmitData);
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
@@ -88,8 +113,8 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                             id="amount"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter transaction amount"
-                            value={transactionData?.amount}
                             {...register("amount")}
+
                         />
                         {errors.amount && (
                             <p className="text-sm text-red-600">
@@ -107,7 +132,6 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                             id="date"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter transaction date"
-                            value={transactionData?.date}
                             {...register("date")}
                         />
                         {errors.date && (
@@ -126,7 +150,6 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                             id="description"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter transaction description"
-                            value={transactionData?.description}
                             {...register("description")}
                         />
                         {errors.description && (
@@ -143,11 +166,11 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                         <select
                             id="category_id"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            value={transactionData?.category.id}
                             {...register("category_id")}
                         >
-                         {categories.map((category) => (
-                                <option key={category.id} value={category.id} selected={category.id === transactionData?.category.id}>
+                            <option value="">Select Category</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
                             ))}

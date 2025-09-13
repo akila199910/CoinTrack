@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 import Image from "next/image";
-import coin from '../../../public/coin.svg'
+import coin from '../../../public/coins.svg'
 import dashboard from '../icons/dashboard.svg'
 import profileW from '../icons/profilew.svg'
 import settings from '../icons/settingsW.svg'
@@ -26,16 +26,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 }`}>
 
             {/* <!-- SIDEBAR HEADER --> */}
-            <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+            <div className="flex flex-col justify-between gap-2 px-6 py-5.5 lg:py-6.5">
                 <Link href="/">
-                    <Image src={coin} alt="Logo" />
+                    <Image src={coin} alt="Logo" className="w-10 h-10"/>
                 </Link>
+                <span className="text-xl font-bold hidden lg:block uppercase text-blue-500">Coin Tracker</span>
             </div>
             {/* <!-- SIDEBAR HEADER --> */}
 
             <div className=" flex flex-col overflow-y-auto duration-300 ease-linear">
                 {/* <!-- Sidebar Menu --> */}
-                <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6 text-black">
+                <nav className="mt-3 py-4 px-4 lg:mt-0 lg:px-6 text-black">
                     <ul className="flex flex-col gap-4 ml-4">
                         <li>
 
