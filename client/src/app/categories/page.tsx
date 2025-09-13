@@ -6,6 +6,8 @@ import { getCategoriesApi, createCategoryApi } from '../api/categoryApi';
 import CategoryModal from '../components/CategoryModal';
 import { CategorySubmitData } from '../validation/category';
 import DataTable from '../components/DataTable';
+import CategoryViewModel from '../components/CategoryViewModel';
+
 
 // Helper function to validate URLs
 const isValidUrl = (string: string): boolean => {
@@ -24,9 +26,6 @@ type Category = {
     image: string;
     status: boolean;
     type: string;
-    userId: number;
-    createdAt: string;
-    updatedAt: string;
 };
 
 const categoriesColumns: ColumnDef<Category>[] = [
@@ -93,8 +92,10 @@ const categoriesColumns: ColumnDef<Category>[] = [
             const value = getValue() as string;
             const color =
                 value == "INCOME"
-                    ? "bg-blue-100 text-blue-700 border-green-200"
-                    : "bg-yellow-100 text-yellow-700 border-red-200";
+                    ? "bg-green-100 text-green-700"
+                    : value == "EXPENSE"
+                    ? "bg-red-100 text-red-700"
+                    :  "bg-purple-100 text-purple-700"
             return (
                 <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium border ${color}`}>
                     {value}
@@ -110,8 +111,8 @@ const categoriesColumns: ColumnDef<Category>[] = [
             const value = getValue() as number;
             const color =
                 value == 1
-                    ? "bg-green-100 text-green-700 border-green-200"
-                    : "bg-red-100 text-red-700 border-red-200";
+                    ? "bg-blue-100 text-blue-700 border-blue-200"
+                    : "bg-yellow-100 text-yellow-700 border-yellow-200";
             return (
                 <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium border ${color}`}>
                     {value == 1 ? "Active" : "Inactive"}
@@ -127,6 +128,9 @@ const Page = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isViewModelOpen, setIsViewModelOpen] = useState(false);
+    const [categoryData, setCategoryData] = useState<Category | null>(null);
+    const [modelName, setModelName] = useState('Create Category');
 
     const getCategories = async () => {
         setLoading(true);
@@ -170,11 +174,21 @@ const Page = () => {
     };
 
     const handleEditCategory = (category: Category) => {
-
+        setCategoryData(category);
+        setIsViewModelOpen(true);
     };
 
     const handleDeleteCategory = (category: Category) => {
+        setCategoryData(category);
+        setIsViewModelOpen(true);
     };
+
+    const handleViewCategory = (category: Category) => {
+        setModelName('View Category');
+        setCategoryData(category);
+        setIsViewModelOpen(true);
+      };
+
 
     if (loading) {
         return (
@@ -222,6 +236,7 @@ const Page = () => {
                 onAdd={handleAddCategory}
                 onEdit={handleEditCategory}
                 onDelete={handleDeleteCategory}
+                onView={handleViewCategory}
                 emptyStateTitle="No categories found"
                 emptyStateDescription="Try adjusting your search criteria"
             />
@@ -230,6 +245,13 @@ const Page = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleCreateCategory}
+            />
+
+            <CategoryViewModel
+                isOpen={isViewModelOpen}
+                onClose={() => setIsViewModelOpen(false)}
+                modelName={modelName}
+                categoryData={categoryData}
             />
         </div>
     )

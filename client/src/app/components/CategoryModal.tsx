@@ -10,7 +10,7 @@ type Category = {
     description: string | null;
     image: string;
     status: boolean;
-    type: "INCOME" | "EXPENSE";
+    type: "INCOME" | "EXPENSE" | "SAVINGS";
 };
 interface CreateCategoryModalProps {
     isOpen: boolean;
@@ -110,6 +110,7 @@ const CategoryModal: React.FC<CreateCategoryModalProps> = ({ isOpen, onClose, on
                         >
                             <option value="INCOME">Income</option>
                             <option value="EXPENSE">Expense</option>
+                            <option value="SAVINGS">Savings</option>
                         </select>
                         {errors.type && (
                             <p className="text-sm text-red-600">

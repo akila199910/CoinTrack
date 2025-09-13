@@ -6,7 +6,7 @@ export const categorySchema = z.object({
     description: z.string().min(1, "Description must be at least 1 character").max(255, "Description must be less than 255 characters").optional(),
     image: z.string().optional(),
     status: z.boolean().optional(),
-    type: z.enum(["INCOME", "EXPENSE"]),
+    type: z.enum(["INCOME", "EXPENSE", "SAVINGS"]),
 })
 
 export type CategorySubmitData = z.infer<typeof categorySchema>;

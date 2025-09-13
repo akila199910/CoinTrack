@@ -1,7 +1,7 @@
 import { User } from "src/users/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Transaction } from "src/transaction/entities/transaction.entity";
-export enum Type { INCOME = 'INCOME', EXPENSE = 'EXPENSE' }
+export enum Type { INCOME = 'INCOME', EXPENSE = 'EXPENSE', SAVINGS = 'SAVINGS' }
 @Entity('categories')
 export class Category {
 
