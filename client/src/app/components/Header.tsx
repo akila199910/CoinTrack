@@ -36,7 +36,7 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
             {/* <span className="text-2xl font-bold sm:hidden">Coin Tracker</span> */}
           </Link>
 
-          <span className="text-2xl font-bold hidden sm:block uppercase text-blue-500">Coin Tracker</span>
+          <span className="text-2xl font-bold hidden sm:block uppercase text-blue-500">Budget Tracker</span>
 
         </div>
 

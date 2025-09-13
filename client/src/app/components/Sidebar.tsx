@@ -26,11 +26,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 }`}>
 
             {/* <!-- SIDEBAR HEADER --> */}
-            <div className="flex flex-col justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+            <div className="flex flex-col justify-between gap-2 px-6 py-5.5 lg:py-6.5 items-center">
                 <Link href="/">
-                    <Image src={coin} alt="Logo" className="w-10 h-10"/>
+                    <Image src={coin} alt="Logo" className="w-10 h-10" />
                 </Link>
-                <span className="text-xl font-bold hidden lg:block uppercase text-blue-500">Coin Tracker</span>
+                <span className="text-xl font-bold hidden lg:block uppercase text-blue-500 text-center">Budget Tracker</span>
             </div>
             {/* <!-- SIDEBAR HEADER --> */}
 
@@ -44,22 +44,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 <div className="flex items-center gap-2 ">
                                     <Image src={dashboard} alt="Dashboard" className="bg-black rounded-sm " />
                                     <span>Dashboard</span>
-                                </div>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/profile">
-                                <div className="flex items-center gap-2 ">
-                                    <Image src={profileW} alt="Profile" className="bg-black rounded-sm " />
-                                    <span>Profile</span>
-                                </div>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/settings">
-                                <div className="flex items-center gap-2 ">
-                                    <Image src={settings} alt="Settings" className="bg-black rounded-sm "  />
-                                    <span>Settings</span>
                                 </div>
                             </Link>
                         </li>
@@ -79,6 +63,23 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 </div>
                             </Link>
                         </li>
+                        <li>
+                            <Link href="/profile">
+                                <div className="flex items-center gap-2 ">
+                                    <Image src={profileW} alt="Profile" className="bg-black rounded-sm " />
+                                    <span>Profile</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/settings">
+                                <div className="flex items-center gap-2 ">
+                                    <Image src={settings} alt="Settings" className="bg-black rounded-sm " />
+                                    <span>Settings</span>
+                                </div>
+                            </Link>
+                        </li>
+
                         <li>
                             <button onClick={() => logout()}>
                                 <div className="flex items-center gap-2 cursor-pointer">

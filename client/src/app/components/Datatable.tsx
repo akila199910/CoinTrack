@@ -153,13 +153,13 @@ export default function DataTable<T>({
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto ">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200 z-10 relative top-0 left-0 w-full  ">
+            <thead className="bg-gray-200 border-b border-gray-200 z-10 relative top-0 left-0 w-full ">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider"
                       style={{ width: header.getSize() }}
                     >
                       {header.isPlaceholder

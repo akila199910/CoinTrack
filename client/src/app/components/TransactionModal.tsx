@@ -32,8 +32,10 @@ interface TransactionModalProps {
 }
 const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, onUpdate: onUpdateProp, categories, modelName, transactionData }) => {
 
+    const isEditMode = !!transactionData;
+
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
-        resolver: zodResolver(transactionData ? updateTransactionSchema : transactionSchema),
+        resolver: zodResolver(isEditMode ? updateTransactionSchema : transactionSchema),
         mode: "onSubmit",
     });
 
@@ -41,35 +43,46 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        console.log('useEffect triggered with transactionData:', transactionData);
         if (transactionData) {
-            reset({
+            const formData = {
+                id: transactionData.id.toString(),
                 amount: transactionData.amount,
                 date: transactionData.date,
                 description: transactionData.description || "",
                 category_id: transactionData.category.id.toString(),
                 status: "true"
-            });
+            };
+            console.log('Resetting form with edit data:', formData);
+            reset(formData);
         } else {
-            reset({
+            const formData = {
                 amount: "",
                 date: "",
                 description: "",
                 category_id: "",
                 status: "true"
-            });
+            };
+            console.log('Resetting form with create data:', formData);
+            reset(formData);
         }
     }, [transactionData, reset]);
     const onSubmit = async (data: TransactionSubmitData | UpdateTransactionSubmitData) => {
         setLoading(true);
         setError(null);
-        console.log(data);
+        console.log('Form submitted with data:', data);
+        console.log('Is edit mode:', isEditMode);
+        console.log('Transaction data:', transactionData);
         try {
             if (transactionData) {
+                console.log('Calling onUpdate with:', data);
                 await onUpdateProp(data as UpdateTransactionSubmitData);
             } else {
+                console.log('Calling onSubmit with:', data);
                 await onSubmitProp(data as TransactionSubmitData);
             }
         } catch (err) {
+            console.error('Error in form submission:', err);
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
             setLoading(false);
@@ -97,7 +110,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                     </button>
                 </div>
 
-                <form onSubmit={handleFormSubmit} className="space-y-4">
+                <form key={isEditMode ? 'edit' : 'create'} onSubmit={handleFormSubmit} className="space-y-4">
                     {error && (
                         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                             <p className="text-red-700 text-sm">{error}</p>
@@ -183,6 +196,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                     </div>
 
                     <input type="hidden" {...register("status")} value="true" />
+                    {transactionData && <input type="hidden" {...register("id")} />}
 
                     <div className="flex justify-end space-x-3 pt-4">
                         <button
