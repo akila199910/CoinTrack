@@ -4,6 +4,7 @@ import { getDashboardDataApi } from "../api/dashboardApi";
 import DoughnutChart from "../components/DoughnutChart";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface DashboardData {
     income: any[];
@@ -149,7 +150,7 @@ export default function Dashboard() {
                     </div>
 
                     <div className="flex justify-center mb-3">
-                        <button className="bg-green-600 text-white px-4 py-2 rounded-md font-bold hover:bg-green-700 cursor-pointer"><span className="text-white text-xl font-bold">+</span> Add</button>
+                        <Link href="/transactions" className="bg-green-600 text-white px-4 py-2 rounded-md font-bold hover:bg-green-700 cursor-pointer"><span className="text-white text-xl font-bold">+</span> Add</Link>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div className="rounded-xl border py-4">
