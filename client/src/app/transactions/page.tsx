@@ -243,6 +243,7 @@ const page = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTransaction}
         modelName={modelName}
+        transactionData={transactionData}
       />
 
       <TransactionViewModel

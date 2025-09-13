@@ -5,15 +5,32 @@ import { transactionSchema, TransactionSubmitData } from "../validation/transact
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 
+type Category = {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    status: boolean;
+    type: string;
+}
+type Transaction = {
+    id: number;
+    amount: string;
+    date: string;
+    description: string;
+    status: boolean;
+    category: Category;
+}
 interface CreateTransactionModalProps {
     isOpen: boolean;
-    categories: [{id: number;name: string;}];
+    categories: [{ id: number; name: string; }];
     onClose: () => void;
     onSubmit: (transactionData: TransactionSubmitData) => Promise<void>;
     modelName: string;
+    transactionData: Transaction | null;
 }
 
-const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, categories, modelName }) => {
+const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClose, onSubmit: onSubmitProp, categories, modelName, transactionData }) => {
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(transactionSchema),
@@ -71,6 +88,7 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                             id="amount"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter transaction amount"
+                            value={transactionData?.amount}
                             {...register("amount")}
                         />
                         {errors.amount && (
@@ -89,6 +107,7 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                             id="date"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter transaction date"
+                            value={transactionData?.date}
                             {...register("date")}
                         />
                         {errors.date && (
@@ -107,6 +126,7 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                             id="description"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter transaction description"
+                            value={transactionData?.description}
                             {...register("description")}
                         />
                         {errors.description && (
@@ -123,10 +143,11 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                         <select
                             id="category_id"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            value={transactionData?.category.id}
                             {...register("category_id")}
                         >
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
+                         {categories.map((category) => (
+                                <option key={category.id} value={category.id} selected={category.id === transactionData?.category.id}>
                                     {category.name}
                                 </option>
                             ))}
@@ -148,7 +169,7 @@ const TransactionModal: React.FC<CreateTransactionModalProps> = ({ isOpen, onClo
                         >
                             Cancel
                         </button>
-                        
+
                         <button
                             type="submit"
                             disabled={loading || isSubmitting}
