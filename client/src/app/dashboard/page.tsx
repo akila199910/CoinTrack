@@ -20,6 +20,14 @@ interface DashboardData {
     };
 }
 
+function makeColors(n: number) {
+    const base = [
+        '#4dc9f6', '#f67019', '#f53794', '#537bc4', '#acc236',
+        '#166a8f', '#00a950', '#58595b', '#8549ba', '#e8c3b9',
+        '#36a2eb', '#ffcd56', '#ff6384', '#9966ff', '#c9cbcf'
+    ];
+    return Array.from({ length: n }, (_, i) => base[i % base.length]);
+}
 export default function Dashboard() {
     const { user } = useAuth();
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -156,6 +164,20 @@ export default function Dashboard() {
                         <div className="rounded-xl border py-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4  text-center"> Income </h3>
                             <DoughnutChart labels={dashboardData.income.map(i => i.income_name)} values={dashboardData.income.map(i => i.total_amount)} />
+
+                            <div className="mt-6 px-8 space-y-2 ">
+                                {dashboardData.income.map((i, index) => (
+                                    <div key={i.income_id} className="grid grid-cols-9 items-center">
+                                        <div className="col-span-3 text-sm font-medium">{i.income_name}</div>
+                                        <div className="col-span-3 text-sm font-medium">{i.total_amount}</div>
+                                        <div className="col-span-2 justify-end text-right">
+                                            <p className="text-sm font-medium ">
+                                                {((i.total_amount / dashboardData.totalIncome) * 100).toFixed(0)} <span className="text-sm font-medium text-black">%</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <div className="rounded-xl border py-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4  text-center"> Expenses </h3>
