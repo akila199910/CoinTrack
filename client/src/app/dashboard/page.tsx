@@ -5,6 +5,7 @@ import DoughnutChart from "../components/DoughnutChart";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import BarGraph from "../components/BarGraph";
 
 interface DashboardData {
     income: any[];
@@ -16,20 +17,19 @@ interface DashboardData {
     balance: number;
     transactionCount: number;
     period: string;
+    graphData: {
+        incomeGraphData: number[];
+        expenseGraphData: number[];
+        savingsGraphData: number[];
+    };
     dateRange?: {
         startDate: string;
         endDate: string;
     };
 }
 
-function makeColors(n: number) {
-    const base = [
-        '#4dc9f6', '#f67019', '#f53794', '#537bc4', '#acc236',
-        '#166a8f', '#00a950', '#58595b', '#8549ba', '#e8c3b9',
-        '#36a2eb', '#ffcd56', '#ff6384', '#9966ff', '#c9cbcf'
-    ];
-    return Array.from({ length: n }, (_, i) => base[i % base.length]);
-}
+const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const values = [1200, 900, 1450, 800, 1680, 1100, 1300, 1500, 1700, 1900, 2100, 2300];
 export default function Dashboard() {
     const { user } = useAuth();
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -217,6 +217,14 @@ export default function Dashboard() {
                                 ))}
                             </div>
                         </div>
+                    </div>
+
+                    <div className="flex flex-col items-center justify-center mt-6">
+                        <div className="text-2xl font-bold text-gray-900">Overview</div>
+                        <div className="w-full">
+                                <BarGraph labels={labels} incomeValues={dashboardData.graphData.incomeGraphData} expenseValues={dashboardData.graphData.expenseGraphData} savingsValues={dashboardData.graphData.savingsGraphData} />
+                        </div>
+
                     </div>
                 </>
             )}

@@ -47,16 +47,16 @@ export class DashboardService {
           }
    
 
-    const whereCondition = {
-            user: { id: userId },
-            date: Between(start, end)
-        } 
+        const whereCondition = {
+                user: { id: userId },
+                date: Between(start, end)
+            } 
 
         const transactionsArray = await this.transactionRepository.find({
             where: { ...whereCondition },
             relations: ['category']
         });
-
+        const graphData = await this.getGraphData(userId);
         // Separate income, expense and savings transactions
         const incomeTransactions = transactionsArray.filter(transaction => transaction.category.type === Type.INCOME);
         const expenseTransactions = transactionsArray.filter(transaction => transaction.category.type === Type.EXPENSE);
@@ -72,7 +72,7 @@ export class DashboardService {
                     income_id: incomeId,
                     income_name: incomeName,
                     total_amount: 0,
-                    transaction_count: 0
+                    transaction_count: 0,
                 };
             }
             
@@ -92,7 +92,7 @@ export class DashboardService {
                     expense_id: expenseId,
                     expense_name: expenseName,
                     total_amount: 0,
-                    transaction_count: 0
+                    transaction_count: 0,
                 };
             }
             
@@ -111,12 +111,11 @@ export class DashboardService {
                     savings_id: savingsId,
                     savings_name: savingsName,
                     total_amount: 0,
-                    transaction_count: 0
+                    transaction_count: 0,
                 };
             }
             acc[savingsId].total_amount +=parseFloat(transaction.amount);
             acc[savingsId].transaction_count += 1;
-            
             return acc;
         }, {} as Record<number, any>);
 
@@ -138,8 +137,37 @@ export class DashboardService {
             totalExpense,
             totalSavings,
             balance,
-            transactionCount: incomeTransactions.length + expenseTransactions.length + savingsTransactions.length
+            transactionCount: incomeTransactions.length + expenseTransactions.length + savingsTransactions.length,
+            graphData
         };
         
+    }
+
+    async getGraphData(userId: number) {
+        const allTransactions = await this.transactionRepository.find({
+            where: { user: { id: userId } },
+            relations: ['category']
+        });
+
+        const incomeGraphData = Array(12).fill(0);
+        const expenseGraphData = Array(12).fill(0);
+        const savingsGraphData = Array(12).fill(0);
+
+        allTransactions.forEach(transaction => {
+            const month = new Date(transaction.date).getMonth();
+            if(transaction.category.type === Type.INCOME){
+                incomeGraphData[month] += parseFloat(transaction.amount);
+            }else if(transaction.category.type === Type.EXPENSE){
+                expenseGraphData[month] += parseFloat(transaction.amount);
+            }else if(transaction.category.type === Type.SAVINGS){
+                savingsGraphData[month] += parseFloat(transaction.amount);
+            }
+        });
+
+        return {
+            incomeGraphData,
+            expenseGraphData,
+            savingsGraphData
+        };
     }
 }
