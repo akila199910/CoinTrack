@@ -165,16 +165,16 @@ export default function Dashboard() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-4  text-center"> Income </h3>
                             <DoughnutChart labels={dashboardData.income.map(i => i.income_name)} values={dashboardData.income.map(i => i.total_amount)} />
 
-                            <div className="mt-6 px-8 space-y-2 ">
+                            <div className="mt-6 gap-2 space-y-2">
                                 {dashboardData.income.map((i, index) => (
                                     <div key={i.income_id} className="grid grid-cols-9 items-center">
-                                        <div className="col-span-3 text-sm font-medium">{i.income_name}</div>
-                                        <div className="col-span-3 text-sm font-medium">{i.total_amount}</div>
-                                        <div className="col-span-2 justify-end text-right">
-                                            <p className="text-sm font-medium ">
-                                                {((i.total_amount / dashboardData.totalIncome) * 100).toFixed(0)} <span className="text-sm font-medium text-black">%</span>
-                                            </p>
+                                        <div className="col-span-2 text-sm font-medium"></div>
+                                        <div className="col-span-2 text-sm font-medium">{i.income_name}</div>
+                                        <div className="col-span-2 text-sm font-medium">{i.total_amount}</div>
+                                        <div className="col-span-1 text-sm font-medium">
+                                            {((i.total_amount / dashboardData.totalIncome) * 100).toFixed(0)} <span className="text-sm font-medium text-black">%</span>
                                         </div>
+                                        <div className="col-span-2 text-sm font-medium"></div>
                                     </div>
                                 ))}
                             </div>
@@ -182,6 +182,19 @@ export default function Dashboard() {
                         <div className="rounded-xl border py-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4  text-center"> Expenses </h3>
                             <DoughnutChart labels={dashboardData.expense.map(e => e.expense_name)} values={dashboardData.expense.map(e => e.total_amount)} />
+                            <div className="mt-6 gap-2 space-y-2">
+                                {dashboardData.expense.map((e, index) => (
+                                    <div key={e.expense_id} className="grid grid-cols-9 items-center">
+                                        <div className="col-span-2 text-sm font-medium"></div>
+                                        <div className="col-span-2 text-sm font-medium">{e.expense_name}</div>
+                                        <div className="col-span-2 text-sm font-medium">{e.total_amount}</div>
+                                        <div className="col-span-1 text-sm font-medium">
+                                            {((e.total_amount / dashboardData.totalExpense) * 100).toFixed(0)} <span className="text-sm font-medium text-black">%</span>
+                                        </div>
+                                        <div className="col-span-2 text-sm font-medium"></div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
