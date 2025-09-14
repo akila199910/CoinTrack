@@ -9,8 +9,10 @@ import Link from "next/link";
 interface DashboardData {
     income: any[];
     expense: any[];
+    savings: any[];
     totalIncome: number;
     totalExpense: number;
+    totalSavings: number;
     balance: number;
     transactionCount: number;
     period: string;
@@ -197,71 +199,24 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Income Transactions */}
-                        {/* <div className="bg-white p-6 rounded-lg shadow-md border">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                                Income Transactions
-                            </h3>
-                            {dashboardData.income.length > 0 ? (
-                                <div className="space-y-3">
-                                    {dashboardData.income.slice(0, 5).map((transaction) => (
-                                        <div key={transaction.id} className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                                            <div>
-                                                <p className="font-medium text-gray-900">{transaction.category?.name}</p>
-                                                <p className="text-sm text-gray-600">{transaction.description}</p>
-                                                <p className="text-xs text-gray-500">{formatDate(transaction.date)}</p>
-                                            </div>
-                                            <p className="font-bold text-green-600">
-                                                +{parseFloat(transaction.amount)}
-                                            </p>
+                    <div className="flex items-center justify-center">
+                        <div className="rounded-xl border py-4 w-full sm:w-1/2">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4  text-center"> Savings </h3>
+                            <DoughnutChart labels={dashboardData.savings.map(s => s.savings_name)} values={dashboardData.savings.map(s => s.total_amount)} />
+                            <div className="mt-6 gap-2 space-y-2">
+                                {dashboardData.savings.map((s, index) => (
+                                    <div key={s.savings_id} className="grid grid-cols-9 items-center">
+                                        <div className="col-span-2 text-sm font-medium"></div>
+                                        <div className="col-span-2 text-sm font-medium">{s.savings_name}</div>
+                                        <div className="col-span-2 text-sm font-medium">{s.total_amount}</div>
+                                        <div className="col-span-1 text-sm font-medium">
+                                            {((s.total_amount / dashboardData.totalSavings) * 100).toFixed(0)} <span className="text-sm font-medium text-black">%</span>
                                         </div>
-                                    ))}
-                                    {dashboardData.income.length > 5 && (
-                                        <p className="text-sm text-gray-500 text-center">
-                                            And {dashboardData.income.length - 5} more...
-                                        </p>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <p>No income transactions</p>
-                                </div>
-                            )}
-                        </div> */}
-
-                        {/* Expense Transactions */}
-                        {/* <div className="bg-white p-6 rounded-lg shadow-md border">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                                Expense Transactions
-                            </h3>
-                            {dashboardData.expense.length > 0 ? (
-                                <div className="space-y-3">
-                                    {dashboardData.expense.slice(0, 5).map((transaction) => (
-                                        <div key={transaction.id} className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                                            <div>
-                                                <p className="font-medium text-gray-900">{transaction.category?.name}</p>
-                                                <p className="text-sm text-gray-600">{transaction.description}</p>
-                                                <p className="text-xs text-gray-500">{formatDate(transaction.date)}</p>
-                                            </div>
-                                            <p className="font-bold text-red-600">
-                                                -{parseFloat(transaction.amount)}
-                                            </p>
-                                        </div>
-                                    ))}
-                                    {dashboardData.expense.length > 5 && (
-                                        <p className="text-sm text-gray-500 text-center">
-                                            And {dashboardData.expense.length - 5} more...
-                                        </p>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <p>No expense transactions</p>
-                                </div>
-                            )}
-                        </div> */}
+                                        <div className="col-span-2 text-sm font-medium"></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </>
             )}

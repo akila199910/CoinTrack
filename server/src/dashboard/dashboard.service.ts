@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from 'src/transaction/entities/transaction.entity';
 import { Repository, Between } from 'typeorm';
 
-export enum Type { INCOME = 'INCOME', EXPENSE = 'EXPENSE' }
+export enum Type { INCOME = 'INCOME', EXPENSE = 'EXPENSE', SAVINGS = 'SAVINGS' }
 
 @Injectable()
 export class DashboardService {
@@ -57,9 +57,10 @@ export class DashboardService {
             relations: ['category']
         });
 
-        // Separate income and expense transactions
+        // Separate income, expense and savings transactions
         const incomeTransactions = transactionsArray.filter(transaction => transaction.category.type === Type.INCOME);
         const expenseTransactions = transactionsArray.filter(transaction => transaction.category.type === Type.EXPENSE);
+        const savingsTransactions = transactionsArray.filter(transaction => transaction.category.type === Type.SAVINGS);
 
         // Group income by category and sum amounts
         const incomeByCategory = incomeTransactions.reduce((acc, transaction) => {
@@ -101,22 +102,43 @@ export class DashboardService {
             return acc;
         }, {} as Record<number, any>);
 
+        const savingsByCategory = savingsTransactions.reduce((acc, transaction) => {
+            const savingsId = transaction.category.id;
+            const savingsName = transaction.category.name;
+            
+            if (!acc[savingsId]) {
+                acc[savingsId] = {
+                    savings_id: savingsId,
+                    savings_name: savingsName,
+                    total_amount: 0,
+                    transaction_count: 0
+                };
+            }
+            acc[savingsId].total_amount +=parseFloat(transaction.amount);
+            acc[savingsId].transaction_count += 1;
+            
+            return acc;
+        }, {} as Record<number, any>);
+
         // Convert objects to arrays for chart data
         const incomeChartData = Object.values(incomeByCategory);
         const expenseChartData = Object.values(expenseByCategory);
-
+        const savingsChartData = Object.values(savingsByCategory);
         // Calculate totals
         const totalIncome = incomeTransactions.reduce((sum, transaction) => sum + parseFloat(transaction.amount), 0);
         const totalExpense = expenseTransactions.reduce((sum, transaction) => sum + parseFloat(transaction.amount), 0);
+        const totalSavings = savingsTransactions.reduce((sum, transaction) => sum + parseFloat(transaction.amount), 0);
         const balance = totalIncome - totalExpense;
 
         return {
             income: incomeChartData,
             expense: expenseChartData,
+            savings: savingsChartData,
             totalIncome,
             totalExpense,
+            totalSavings,
             balance,
-            transactionCount: incomeTransactions.length + expenseTransactions.length
+            transactionCount: incomeTransactions.length + expenseTransactions.length + savingsTransactions.length
         };
         
     }
