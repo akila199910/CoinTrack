@@ -1,12 +1,12 @@
 import { Body, Controller, Get, HttpStatus, Post, Put, Req, Res, UsePipes, ValidationPipe, UseGuards, ConflictException } from '@nestjs/common';
 import type { Response } from 'express';
-import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import multer from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
+import { SettingsDto } from './dto/settings.dto';
 
 @Controller('users')
 export class UsersController {
@@ -209,6 +209,34 @@ export class UsersController {
                 status: false,
                 data: [],
                 message: 'Failed to update cover image'
+            });
+        }
+    }
+
+    @Put('settings')
+    @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+    async updatePassword(@Req() req: any, @Body() updateData: SettingsDto, @Res() res: Response) {
+        try {
+            const data = await this.usersService.updatePassword(req.user.sub, updateData.password!);
+            if (!data.status) {
+                return res.status(HttpStatus.BAD_REQUEST).json({
+                    status: false,
+                    data: [],
+                    message: data.message
+                });
+            }
+            return res.status(HttpStatus.OK).json({
+                status: data.status,
+                data: data.data,
+                message: data.message
+            });
+        } catch (error) {
+        
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: false,
+                data: [],
+                message: 'Failed to update password'
             });
         }
     }

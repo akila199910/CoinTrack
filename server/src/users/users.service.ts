@@ -130,4 +130,22 @@ export class UsersService {
         return user;
     }
 
+    async updatePassword(id: number, password: string) {
+        const user = await this.usersRepository.findOne({ where: { id } });
+        if (!user) {
+            return {
+                status: false,
+                data: [],
+                message: 'User not found'
+            };
+        }
+        user.password = await bcrypt.hash(password, 10);
+        await this.usersRepository.save(user);
+        return {
+            status: true,
+            data: user,
+            message: 'Password updated successfully'
+        };
+    }
+
 }
