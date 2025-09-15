@@ -94,8 +94,8 @@ const categoriesColumns: ColumnDef<Category>[] = [
                 value == "INCOME"
                     ? "bg-green-100 text-green-700"
                     : value == "EXPENSE"
-                    ? "bg-red-100 text-red-700"
-                    :  "bg-purple-100 text-purple-700"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-purple-100 text-purple-700"
             return (
                 <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium border ${color}`}>
                     {value}
@@ -138,12 +138,9 @@ const Page = () => {
         try {
             const response = await getCategoriesApi();
             setCategoriesData(response.data.data);
-            setTimeout(() => {
-                setLoading(false);
-            }, 2000);
-            setError(null);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
+        } finally {
             setTimeout(() => {
                 setLoading(false);
             }, 2000);
@@ -178,7 +175,7 @@ const Page = () => {
         setModelName('Edit Category');
         setCategoryData(category);
         setIsModalOpen(true);
-       
+
     };
 
     const handleUpdateCategory = async (categoryData: UpdateCategorySubmitData) => {
@@ -205,7 +202,7 @@ const Page = () => {
         setModelName('View Category');
         setCategoryData(category);
         setIsViewModelOpen(true);
-      };
+    };
 
 
     if (loading) {

@@ -31,7 +31,7 @@ const page = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [categories, setCategories] = useState<[{id: number;name: string;}]>([{id: 0, name: ''}]);
+  const [categories, setCategories] = useState<[{ id: number; name: string; }]>([{ id: 0, name: '' }]);
   const [modelName, setModelName] = useState('Create Transaction');
   const [transactionData, setTransactionData] = useState<Transaction | null>(null);
 
@@ -75,7 +75,7 @@ const page = () => {
       ),
       size: 160,
     },
-  
+
     {
       id: "type",
       header: "Type",
@@ -85,14 +85,14 @@ const page = () => {
           ${row.original.category.type == "INCOME" ?
             "bg-green-100 text-green-700" :
             row.original.category.type == "EXPENSE" ?
-            "bg-red-100 text-red-700" :
-            "bg-purple-100 text-purple-700"}`}>
+              "bg-red-100 text-red-700" :
+              "bg-purple-100 text-purple-700"}`}>
           {row.original.category.type}
         </span>
       ),
       size: 100
     },
-  
+
     {
       id: "amount",
       header: "Amount",
@@ -126,7 +126,7 @@ const page = () => {
       ),
       size: 100
     },
-  
+
   ]
   const getTransactions = async () => {
     setLoading(true);
