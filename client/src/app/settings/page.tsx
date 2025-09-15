@@ -7,24 +7,49 @@ import eyeSlash from "../icons/eye-off.svg";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { settingsSchema, SettingsSubmitData } from "../validation/settings";
+import { updatePassword } from "../api/api";
 const page = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [settingsData, setSettingsData] = useState<any>({});
+    const [success, setSuccess] = useState<string | null>(null);
     const [viewPassword, setViewPassword] = useState(false);
     const [viewConfirmPassword, setViewConfirmPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SettingsSubmitData>({
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(settingsSchema),
         mode: "onSubmit",
         defaultValues: {
-            password: undefined,
-            confirmPassword: undefined,
+            password: "",
+            confirmPassword: "",
         },
     });
 
-    const onSubmit = (data: SettingsSubmitData) => {
-        console.log(data);
+    const onSubmit = async (data: SettingsSubmitData) => {
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
+        try {
+            const response = await updatePassword(data);
+            console.log(response);
+
+            if (response.data.status) {
+                // Success case
+                setSuccess("Password updated successfully!");
+                reset(); // Clear form inputs
+
+                // Show loader for 2000ms then hide it
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000);
+            } else {
+                // Error case
+                setError(response.data.message || 'Failed to update password');
+                setLoading(false);
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred');
+            setLoading(false);
+        }
     }
 
     if (loading) {
@@ -33,7 +58,9 @@ const page = () => {
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                        <p className="text-gray-600">Loading settings...</p>
+                        <p className="text-gray-600">
+                            {success ? "Password updated successfully!" : "Updating password..."}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -47,6 +74,20 @@ const page = () => {
 
             <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default mx-auto max-w-sm">
                 <form className="mx-auto p-4" noValidate onSubmit={handleSubmit(onSubmit)}>
+
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Success Message */}
+                    {success && !loading && (
+                        <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                            {success}
+                        </div>
+                    )}
 
                     <div className="p-2 flex flex-col gap-2">
                         <label htmlFor="password" className="block text-sm font-bold text-gray-700">Password</label>

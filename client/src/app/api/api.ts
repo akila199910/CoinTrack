@@ -1,6 +1,7 @@
 import axios from "axios";
 import { RegisterSubmitData } from "../validation/register";
 import { LoginSubmitData } from "../validation/login";
+import { SettingsSubmitData } from "../validation/settings";
 
 const baseUrl = "http://localhost:4000/api/v1";
 
@@ -38,6 +39,13 @@ export async function logoutUser() {
 }
 export async function getCurrentUser() {
   const res = await api.get("/auth/me", {
+    validateStatus: () => true,
+  });
+  return res;
+}
+
+export async function updatePassword(data: SettingsSubmitData) {
+  const res = await api.put("/users/settings", data, {
     validateStatus: () => true,
   });
   return res;
