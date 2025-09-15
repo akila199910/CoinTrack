@@ -8,10 +8,12 @@ import Image from "next/image";
 import loaderImage from "../animation/loader.svg";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
-
+import eye from "../icons/eye.svg";
+import eyeSlash from "../icons/eye-off.svg";
 const Register = () => {
     const [loader, setLoader] = useState(false);
     const [error, setError] = useState<string>("");
+    const [viewPassword, setViewPassword] = useState(false);
     const router = useRouter();
     const { login } = useAuth();
 
@@ -182,13 +184,16 @@ const Register = () => {
                 <label htmlFor="password" className="block text-sm font-medium">
                     Password
                 </label>
+                <div className="flex items-center gap-2 relative">
                 <input
-                    type="password"
+                    type={viewPassword ? "text" : "password"}
                     id="password"
                     placeholder="**********"
                     className="auth-input"
                     {...register("password")}
                 />
+                <Image src={viewPassword ? eye : eyeSlash} alt="eye" className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2" onClick={() => setViewPassword(!viewPassword)} />
+                </div>
                 {errors.password && (
                     <p className="text-sm text-red-600">
                         {errors.password.message}
@@ -199,7 +204,9 @@ const Register = () => {
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="auth-button"
+                className="auth-button rounded-lg bg-blue-500 mt-4
+                     text-white p-2 font-medium outline-none transition-all 
+                     duration-200 focus:shadow-md cursor-pointer"
             >
                 {isSubmitting ? "Registering..." : "Register"}
             </button>
